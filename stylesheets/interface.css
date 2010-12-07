@@ -1,0 +1,140 @@
+/* Reset
+/*--------------------------------------------------------------------------------------------------------------------*/
+html, body, div, span, canvas, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    font-family: inherit;
+    vertical-align: baseline;
+}
+
+/* Default Elements, Basic Class Definitions
+/*--------------------------------------------------------------------------------------------------------------------*/
+*, *:focus {
+    -webkit-touch-callout: none; /* prevent iOS link menu from popping up */
+    outline: 0;
+}
+
+body {
+    line-height: 1;
+    color: black;
+    font-family: "HelveticaNeueBlack", "Helvetica Neue", Helvetica, Arial;
+    -webkit-user-select: none; 
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.0);
+    min-height: 417px; /* makes address bar go away when window.scrollTo(0,1) is called */
+    background-color:white;
+}
+
+select {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+ol, ul {
+    list-style: none;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+caption, th, td {
+    text-align: left;
+    font-weight: normal;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+    content: "";
+}
+
+blockquote, q {
+    quotes: "" "";
+}
+
+strong {
+    font-weight: bold;
+}
+
+hr {
+    border-bottom: 1px solid #f5f4f2;
+    border-top: 1px solid #c6c5c1;
+    border-left: 0;
+}
+
+h6 {
+    font-size: 20px;
+    color: #333;
+}
+
+.right {
+    float: right;
+}
+
+.left {
+    float: left;
+}
+
+.clear {
+    clear: both;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+/* Debugger
+/*--------------------------------------------------------------------------------------------------------------------*/
+div#debug {
+    display: block;
+    z-index: 9999;
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    width: 300px;
+    height: 200px;
+    border: 1px dotted red;
+    padding: 8px;
+    background-color: #eeeeee;
+    font-size: 12px;
+    color: #ff0000;
+}
+
+div#debug_log {
+    font-size: 10px;
+    color: #111111;
+    white-space: nowrap;
+    overflow: auto;
+}
+
+/* Fonts ------------------------------------------------------------------------------------------------------------ */
+/* use http://www.fontsquirrel.com/fontface/generator for iPad-friendly svg fonts */
+@font-face {
+    font-family: 'HelveticaNeueBlack';
+    src: url('../fonts/helvetica_95_black-webfont.ttf') format('truetype'), url('../fonts/helvetica_95_black-webfont.svg#webfontiSPnWksO') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Example project */
+
+.example {
+  float:left;
+  width:500px;
+  height:300px;
+  padding:10px;
+  border:1px solid #999999;
+  margin:4px 0px 0px 4px;
+  background-color:#EEEEEE;
+}
+
+.example h1 {
+  margin-bottom:10px;
+}
+

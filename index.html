@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FYeahJS</title>
+
+    <script type="text/javascript" charset="utf-8" src="javascripts/lib/libraries/class.js"></script>
+    <script type="text/javascript" charset="utf-8" src="javascripts/lib/tween/jstweener.js"></script>
+    
+    <script type="text/javascript" charset="utf-8" src="javascripts/util/platform_helper.js"></script>
+    <script type="text/javascript" charset="utf-8" src="javascripts/util/math_util.js"></script>
+    <script type="text/javascript" charset="utf-8" src="javascripts/util/mobile/idevice_util.js"></script>
+    
+    <script type="text/javascript" charset="utf-8" src="javascripts/util/debug/stats.js"></script>
+    <script type="text/javascript" charset="utf-8" src="javascripts/util/debug/debug.js"></script>
+    
+    <script type="text/javascript" charset="utf-8" src="javascripts/view/loading_indicator.js"></script>
+    
+    <script type="text/javascript" charset="utf-8" src="javascripts/util/touch/touch_tracker.js"></script>
+    <script type="text/javascript" charset="utf-8" src="javascripts/util/touch/scroll_view.js"></script>
+    <script type="text/javascript" charset="utf-8" src="javascripts/util/touch/scroll_view_paged.js"></script>
+    <script type="text/javascript" charset="utf-8" src="javascripts/util/touch/vertical_content_scroll.js"></script>
+    
+    <link rel="stylesheet" href="stylesheets/interface.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="stylesheets/loading_indicator.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    
+    <script type="text/javascript">
+      function Demo() {
+        // create debug
+        window.debug = new Debug();
+        window.debug.init();
+        //window.debug.dispose(); 
+        
+        // create platform helper
+        window.platform_helper = new PlatformHelper();
+        
+        // default mobile properties
+        IDevice.preventMobileSafariBounce();
+        
+        // create loading indicator
+        var loader = new LoadingIndicator( document.getElementById('loader') );
+        loader.pause();
+        
+        // create touch tracker
+        var touchTracker;
+        var touchTrackerDelegate = {
+          touchUpdated : function( state, touchEvent ) {
+            document.getElementById('touch_tracker_output').innerHTML = 'x:' + touchTracker.touchcurrent.x + ', y:' + touchTracker.touchcurrent.y + ', ' + state;
+          }
+        };
+        touchTracker = new MouseAndTouchTracker( document.getElementById('touch_tracker'), touchTrackerDelegate );
+        
+        // create vertical content scroller
+        var vertical_content = new VerticalContentScroller( document.getElementById('vert_scroller'), document.getElementById('vert_scroller_inner') );
+        
+        // create vertical content scroller with indicator
+        var indicator = new PageIndicator( document.getElementById('horiz_paged_scroller'), 15, 2, 'ff0000', '555555' );
+        var horizontal_paged = new ScrollViewPagedHorizontal( document.getElementById('horiz_paged_scroller'), document.getElementById('horiz_paged_scroller_inner'), indicator );
+      }
+      
+      function initDemo(){
+        window.demo = new Demo();
+      }
+    </script>
+  </head>
+  <body onload="initDemo();">
+    <div class="example">
+      <h1>Loader</h1>
+      <div id="loader" style="position:relative;width:300px;height:200px;background-color:#444;"></div>
+    </div>
+    
+    <div class="example">
+      <h1>MouseAndTouchTracker</h1>
+      <div id="touch_tracker" style="position:relative;width:300px;height:200px;background-color:#f00;"></div>
+      <div id="touch_tracker_output"></div>
+    </div>
+    
+    <div class="example">
+      <h1>Vertical Scrollable Content</h1>
+      <div id="vert_scroller" style="position:relative;width:400px;height:150px;overflow:hidden;">
+        <div id="vert_scroller_inner" style="position:absolute;width:400px;height:420px;left:0px;top:0px">
+          <img src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/>
+        </div>
+      </div>
+    </div>
+    
+    <div class="example">
+      <h1>Horizontal Paged Scroller</h1>
+      <div id="horiz_paged_scroller" style="position:relative;width:400px;height:150px;overflow:hidden;">
+        <div id="horiz_paged_scroller_inner" style="position:absolute;width:800px;height:420px;left:0px;top:0px">
+          <img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/>
+          <img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/>
+        </div>
+      </div>
+    </div>
+    
+  </body>
+</html>
