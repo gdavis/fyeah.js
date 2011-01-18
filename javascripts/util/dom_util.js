@@ -26,6 +26,15 @@ DOMUtil.removeElement = function( elem ) {
   }
 };
 
+DOMUtil.getStyle = function(el,styleProp) {
+	if (el.currentStyle) {
+		var y = el.currentStyle[styleProp];
+	} else if (window.getComputedStyle) {
+		var y = document.defaultView.getComputedStyle(el,null).getPropertyValue(styleProp);
+	}
+	return y;
+};
+
 DOMUtil.createElement = function( type, params, parent ) {
   var type = type || params.tag, 
     prop, 
@@ -75,5 +84,22 @@ DOMUtil.toggleClass = function( el, name, on ) {
     this.addClass( el, name );
   } else {
     this.removeClass( el, name );
+  }
+};
+
+DOMUtil.recurseDisableElements = function ( elem ) {
+  if( elem ) {
+    // disable clicking/dragging
+    try {
+      elem.onmousedown = function(e){return false;};  // TODO: remove this is touch events, so we can click inside??
+      elem.onselectstart = function(){return false;}
+    } catch(err) {}
+
+    // loop through children and do the same
+    if( elem.childNodes.length > 0 ) {
+      for( var i=0; i < elem.childNodes.length; i++ ) {
+        this.recurseDisableElements( elem.childNodes[i] );
+      }
+    }
   }
 };

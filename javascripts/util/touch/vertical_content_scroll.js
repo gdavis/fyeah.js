@@ -17,7 +17,7 @@ var VerticalContentScroller = Class.create(ScrollViewLocksDirection, {
 		
 		this.bottom_limit = this.container_size.height - this.content_size.height;
 		
-		this.scroll_indicator = new VerticalScrollIndicator( this.touch_tracker.scroll_container, this.container_size.width, this.container_size.height, this.content_size.height );
+		this.scroll_indicator = new VerticalScrollIndicator( this.touch_tracker.container, this.container_size.width, this.container_size.height, this.content_size.height );
 		
     //      var self = this;
     // document.observe( app_events.VERTICAL_SCROLLER_CONTENT_SIZE_CHANGED, function(e) { self.updateOnContentSizeChange(e); } );
@@ -120,10 +120,12 @@ var VerticalContentScroller = Class.create(ScrollViewLocksDirection, {
 		var relativeContainerY = this.touch_tracker.container_position.y;
 		
 		// only pass along move event if inside container & we haven't decided on the other direction
-		if( relativeTouchY > relativeContainerY && relativeTouchY < relativeContainerY + this.container_size.height && this.touch_lock_direction != this.HORIZONTAL ) {
+		//if( relativeTouchY > relativeContainerY && relativeTouchY < relativeContainerY + this.container_size.height && this.touch_lock_direction != this.HORIZONTAL ) {
+		  if( this.touch_lock_direction != this.HORIZONTAL ) {
 	        this.speed = -this.touch_tracker.touchspeed.y;
-            $super( touchEvent );
+            
 	    }	
+	    $super( touchEvent );
 	},
 	hasDecidedDirection : function ( $super, direction ) {
 	    $super( direction );

@@ -28,7 +28,7 @@ var ScrollViewPagedCanvas = Class.create(ScrollViewPagedHorizontal, {
 		if( !this.is_scroll_disabled ) {
 		    // let the paged scroller calculate our current page index
 		    // disable scrolling until resting  & images activated
-		    if( this.touch_lock_direction != this.VERTICAL && Math.abs( this.touch_tracker.touchmove.x ) > this.decide_threshold ) { 
+		    if( this.touch_lock_direction != this.VERTICAL && Math.abs( this.touch_tracker.touchmoved.x ) > this.decide_threshold ) { 
         		this.is_scroll_disabled = true; 
     	    }
 		    else {

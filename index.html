@@ -34,26 +34,87 @@
         window.platform_helper = new PlatformHelper();
         
         // default mobile properties
-        IDevice.preventMobileSafariBounce();
+        //IDevice.preventMobileSafariBounce();
         
         // create loading indicator
         var loader = new LoadingIndicator( document.getElementById('loader') );
         loader.pause();
         
         // create touch tracker
-        var touchTracker;
-        var touchTrackerDelegate = {
+        var touchTracker = new MouseAndTouchTracker( document.getElementById('touch_tracker'), {
           touchUpdated : function( state, touchEvent ) {
-            document.getElementById('touch_tracker_output').innerHTML = 'x:' + touchTracker.touchcurrent.x + ', y:' + touchTracker.touchcurrent.y + ', ' + state;
+            // prevent browser scrolling while in touch tracker element
+            if(touchEvent && state == MouseAndTouchTracker.state_move) {
+              touchEvent.preventDefault();
+            }
+            
+            // track touch properties
+            var outputStr = 'touchcurrent: ' + touchTracker.touchcurrent.x + ', ' + touchTracker.touchcurrent.y + '<br/>';
+            outputStr += 'touchstart :' + touchTracker.touchstart.x + ', ' + touchTracker.touchstart.y + '<br/>';
+            outputStr += 'touchmoved :' + touchTracker.touchmoved.x + ', ' + touchTracker.touchmoved.y + '<br/>';
+            outputStr += 'touchspeed :' + touchTracker.touchspeed.x + ', ' + touchTracker.touchspeed.y + '<br/>';
+            outputStr += 'state:' + state + '<br/>';
+            
+            document.getElementById('touch_tracker').innerHTML = outputStr;
+          }
+        }, false );
+        
+        
+        // create touch tracker
+        // TODO: MAKE THIS BEHAVE PROPERLY ON ANDROID
+        var touchTrackerBall = document.getElementById('touch_tracker_no_press_ball');
+        var touchTrackerNoPress;
+        var touchTrackerNoPressDelegate = {
+          curX : 0,
+          curY : 0,
+          speedX : 0,
+          speedY : 0,
+          friction : 0.95,
+          touchUpdated : function( state, touchEvent ) {
+            // set ball speed on leave
+            if(state == MouseAndTouchTracker.state_leave) {
+              if( !isNaN(touchTrackerNoPress.touchspeed.x) ) this.speedX = touchTrackerNoPress.touchspeed.x;
+              if( !isNaN(touchTrackerNoPress.touchspeed.y) ) this.speedY = touchTrackerNoPress.touchspeed.y;
+            }
+            
+            // track touch properties
+            var outputStr = 'touchcurrent: ' + touchTrackerNoPress.touchcurrent.x + ', ' + touchTrackerNoPress.touchcurrent.y + '<br/>';
+            outputStr += 'touchstart :' + touchTrackerNoPress.touchstart.x + ', ' + touchTrackerNoPress.touchstart.y + '<br/>';
+            outputStr += 'touchmoved :' + touchTrackerNoPress.touchmoved.x + ', ' + touchTrackerNoPress.touchmoved.y + '<br/>';
+            outputStr += 'touchspeed :' + touchTrackerNoPress.touchspeed.x + ', ' + touchTrackerNoPress.touchspeed.y + '<br/>';
+            outputStr += 'state:' + state + '<br/>';
+            
+            document.getElementById('touch_tracker_no_press_text').innerHTML = outputStr;
+          },
+          animate : function() {
+            if(this.curX + this.speedX > touchTrackerNoPress.container.offsetWidth - 10 || this.curX + this.speedX < 0) {
+              this.speedX *= -1;
+            }
+            
+            if(this.curY + this.speedY > touchTrackerNoPress.container.offsetHeight - 10 || this.curY + this.speedY < 0) {
+              this.speedY *= -1;
+            }
+            
+            this.curX += this.speedX;
+            this.curY += this.speedY;
+            
+            window.platform_helper.update2DPosition(touchTrackerBall, Math.round(this.curX), Math.round(this.curY));
+            
+            if(Math.abs(this.speedX) > 0) this.speedX *= this.friction;
+            if(Math.abs(this.speedY) > 0) this.speedY *= this.friction;
           }
         };
-        touchTracker = new MouseAndTouchTracker( document.getElementById('touch_tracker'), touchTrackerDelegate );
+        touchTrackerNoPress = new MouseAndTouchTracker( document.getElementById('touch_tracker_no_press'), touchTrackerNoPressDelegate, true );
+        var ballTimer = setInterval(function(){
+          touchTrackerNoPressDelegate.animate();
+        }, 50);
         
         // create vertical content scroller
         var vertical_content = new VerticalContentScroller( document.getElementById('vert_scroller'), document.getElementById('vert_scroller_inner') );
         
         // create vertical content scroller with indicator
-        var indicator = new PageIndicator( document.getElementById('horiz_paged_scroller'), 15, 2, 'ff0000', '555555' );
+        var horizontalPages = document.getElementById('horiz_paged_scroller_inner').childNodes.length;
+        var indicator = new PageIndicator( document.getElementById('horiz_paged_scroller'), 15, horizontalPages, 'ff0000', '555555' );
         var horizontal_paged = new ScrollViewPagedHorizontal( document.getElementById('horiz_paged_scroller'), document.getElementById('horiz_paged_scroller_inner'), indicator );
       }
       
@@ -70,8 +131,15 @@
     
     <div class="example">
       <h1>MouseAndTouchTracker</h1>
-      <div id="touch_tracker" style="position:relative;width:300px;height:200px;background-color:#f00;"></div>
-      <div id="touch_tracker_output"></div>
+      <div id="touch_tracker" style="position:relative;width:300px;height:200px;background-color:#f00;color:white"></div>
+    </div>
+    
+    <div class="example">
+      <h1>MouseAndTouchTrackerNoPress</h1>
+      <div id="touch_tracker_no_press" style="position:relative;width:300px;height:200px;background-color:#f00;z-index:1">
+        <div id="touch_tracker_no_press_ball" style="position:absolute;width:10px;height:10px;background-color:black;-webkit-border-radius:5px;-moz-border-radius:5px"></div>
+        <div id="touch_tracker_no_press_text" style="position:absolute;top:0;left:0;width:300px;height:200px;color:white;z-index:3"></div>
+      </div>
     </div>
     
     <div class="example">
@@ -86,10 +154,7 @@
     <div class="example">
       <h1>Horizontal Paged Scroller</h1>
       <div id="horiz_paged_scroller" style="position:relative;width:400px;height:150px;overflow:hidden;">
-        <div id="horiz_paged_scroller_inner" style="position:absolute;width:800px;height:420px;left:0px;top:0px">
-          <img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/>
-          <img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/>
-        </div>
+        <div id="horiz_paged_scroller_inner" style="position:absolute;width:2400px;height:420px;left:0px;top:0px"><img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/><img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/><img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/><img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/><img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/><img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/></div>
       </div>
     </div>
     

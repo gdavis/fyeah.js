@@ -197,9 +197,9 @@ var ScrollViewPagedHorizontal = Class.create(ScrollViewPagedBase, {
 	    // handle bounce-back and lessened swipe-ability at ends of scroll area
 	    if( this.scroll_enabled_x ) 
 		{
-			if( this.page_index == 0 && this.touch_tracker.touchmove.x > 0 )
+			if( this.page_index == 0 && this.touch_tracker.touchmoved.x > 0 )
 			    this.cur_position.x += moveX * 0.3;
-			else if( this.page_index == this.num_pages - 1 && this.touch_tracker.touchmove.x < 0 )
+			else if( this.page_index == this.num_pages - 1 && this.touch_tracker.touchmoved.x < 0 )
 			    this.cur_position.x += moveX * 0.3;
 			else
 			    this.cur_position.x += moveX;
@@ -218,9 +218,11 @@ var ScrollViewPagedHorizontal = Class.create(ScrollViewPagedBase, {
 		var relativeTouchX = this.touch_tracker.touchcurrent.x + this.touch_tracker.container_position.x;
 		var relativeContainerX = this.touch_tracker.container_position.x;
 		// only pass along move event if inside container
-		if( relativeTouchX > relativeContainerX && relativeTouchX < relativeContainerX + this.container_size.width && this.touch_lock_direction != this.VERTICAL ) {
-	        $super( touchEvent );
+		//if( relativeTouchX > relativeContainerX && relativeTouchX < relativeContainerX + this.container_size.width && this.touch_lock_direction != this.VERTICAL ) {
+		  if( this.touch_lock_direction != this.VERTICAL ) {
+	        
 	    }
+	    $super( touchEvent );
 	    
 		// is we've set the flag, disable the main nav
 		if( this.cancels_main_nav )
@@ -229,9 +231,9 @@ var ScrollViewPagedHorizontal = Class.create(ScrollViewPagedBase, {
 	onEnd : function($super, touchEvent) {
 	    // snap to page and constrain page calculation
 	    if( this.touch_lock_direction == this.HORIZONTAL ) {
-    		if( this.touch_tracker.touchmove.x > this.container_size.width * this.page_turn_ratio )
+    		if( this.touch_tracker.touchmoved.x > this.container_size.width * this.page_turn_ratio )
     			this.page_index = ( this.page_index == 0 ) ? 0 : this.page_index - 1;
-    		else if	( this.touch_tracker.touchmove.x < -this.container_size.width * this.page_turn_ratio )
+    		else if	( this.touch_tracker.touchmoved.x < -this.container_size.width * this.page_turn_ratio )
     			this.page_index = ( this.page_index < this.num_pages - 1 ) ? this.page_index + 1 : this.num_pages - 1;
 		}
 		
@@ -276,7 +278,7 @@ var ScrollViewPagedVertical = Class.create(ScrollViewPagedBase, {
 		// set scroll container
 		scrollContentElement.style.height = ( 973 * numPages ) + 'px';
 		$super( scrollContainer, scrollContentElement );
-		this.scroll_indicator = new VerticalScrollIndicator( this.touch_tracker.scroll_container, this.container_size.width, this.container_size.height, this.content_size.height );
+		this.scroll_indicator = new VerticalScrollIndicator( this.touch_tracker.container, this.container_size.width, this.container_size.height, this.content_size.height );
 		
 		this.activate();
 	},
@@ -306,9 +308,9 @@ var ScrollViewPagedVertical = Class.create(ScrollViewPagedBase, {
 	},
 	updatePositionFromTouch : function( $super, moveX, moveY ) {
 	    // handle bounce-back and lessened swipe-ability at ends of scroll area
-		if( this.page_index == 0 && this.touch_tracker.touchmove.y > 0 )
+		if( this.page_index == 0 && this.touch_tracker.touchmoved.y > 0 )
 		    this.cur_position.y += moveY * 0.3;
-		else if( this.page_index == this.num_pages - 1 && this.touch_tracker.touchmove.y < 0 )
+		else if( this.page_index == this.num_pages - 1 && this.touch_tracker.touchmoved.y < 0 )
 		    this.cur_position.y += moveY * 0.3;
 		else
 		    this.cur_position.y += moveY;
@@ -347,9 +349,9 @@ var ScrollViewPagedVertical = Class.create(ScrollViewPagedBase, {
 	    if( this.touch_lock_direction == this.VERTICAL ) {
 	        var previousPage = this.page_index;
     	    // snap to page and constrain page calculation
-    		if( this.touch_tracker.touchmove.y > this.container_size.height * this.page_turn_ratio )
+    		if( this.touch_tracker.touchmoved.y > this.container_size.height * this.page_turn_ratio )
     			this.page_index = ( this.page_index == 0 ) ? 0 : this.page_index - 1;
-    		else if ( this.touch_tracker.touchmove.y < -this.container_size.height * this.page_turn_ratio )
+    		else if ( this.touch_tracker.touchmoved.y < -this.container_size.height * this.page_turn_ratio )
     			this.page_index = ( this.page_index < this.num_pages - 1 ) ? this.page_index + 1 : this.num_pages - 1;
 		}
 		

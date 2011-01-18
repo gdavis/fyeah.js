@@ -2,16 +2,16 @@ var ScrollViewTouchTracker = Class.create( {
 	initialize : function( touchObject ) {
 		this.touch_tracker = new MouseAndTouchTracker( touchObject, this );
 	},
-	touchUpdated : function ( touchState ) {
+	touchUpdated : function ( touchState, touchEvent ) {
     switch( touchState ) {
       case MouseAndTouchTracker.state_start :
-        this.onStart();
+        this.onStart(touchEvent);
         break;
       case MouseAndTouchTracker.state_move :
-        this.onMove();
+        this.onMove(touchEvent);
         break;
       case MouseAndTouchTracker.state_end :
-        this.onEnd();
+        this.onEnd(touchEvent);
         break;
     }
   },
@@ -46,8 +46,8 @@ var ScrollView = Class.create(ScrollViewTouchTracker, {
 		this.calculateDimensions();
 	},
 	calculateDimensions : function() {
-		this.container_size.width = this.touch_tracker.scroll_container.offsetWidth;
-		this.container_size.height = this.touch_tracker.scroll_container.offsetHeight;
+		this.container_size.width = this.touch_tracker.container.offsetWidth;
+		this.container_size.height = this.touch_tracker.container.offsetHeight;
 		this.content_size.width = this.scroll_content.offsetWidth;
 		this.content_size.height = this.scroll_content.offsetHeight;
 	},
@@ -65,7 +65,7 @@ var ScrollView = Class.create(ScrollViewTouchTracker, {
 	},
 	onMove : function($super, touchEvent) {
 		$super( touchEvent );
-		this.updatePositionFromTouch( ( this.touch_tracker.touchmove.x - this.touch_tracker.touchlast.x ), ( this.touch_tracker.touchmove.y - this.touch_tracker.touchlast.y ) );
+		this.updatePositionFromTouch( ( this.touch_tracker.touchmoved.x - this.touch_tracker.touchmovedlast.x ), ( this.touch_tracker.touchmoved.y - this.touch_tracker.touchmovedlast.y ) );
 	},
 	onEnd : function($super, touchEvent) {
 		$super( touchEvent );
@@ -104,14 +104,15 @@ var ScrollViewLocksDirection = Class.create(ScrollView, {
     // if we haven't moved far enough in a direction, watch for which direction (x/y) moves to the threshold first
     // once a direction is decided, start passing through onMove events
     if( !this.has_decided_a_direction ) {
-      if( Math.abs( this.touch_tracker.touchmove.x ) > this.decide_threshold ) {
+      if( Math.abs( this.touch_tracker.touchmoved.x ) > this.decide_threshold ) {
         this.hasDecidedDirection( this.HORIZONTAL );
-      } else if( Math.abs( this.touch_tracker.touchmove.y ) > this.decide_threshold ) {
+      } else if( Math.abs( this.touch_tracker.touchmoved.y ) > this.decide_threshold ) {
         this.hasDecidedDirection( this.VERTICAL );
       }
+    } else {
+      $super( touchEvent );
     }
-    else
-    $super( touchEvent );
+    touchEvent.preventDefault();
 	},
 	onEnd : function($super, touchEvent) {   
 		$super( touchEvent );
