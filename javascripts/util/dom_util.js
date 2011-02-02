@@ -47,7 +47,7 @@ DOMUtil.createElement = function( type, params, parent ) {
             el.appendChild( document.createTextNode( params[prop] ) );
             break;
           case 'className':
-            el.setAttribute( 'class', params[prop]);
+			el.className = params[prop];
             break;
           default:
             el.setAttribute( prop, params[prop] );
