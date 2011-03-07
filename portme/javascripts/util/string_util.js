@@ -5,6 +5,14 @@ String.prototype.toClassName = function() {
     return words.join('');
 }
 
+var escapeHTML = function(str) {
+return str.replace(/&/g,'&amp;').replace(/>/g,'&gt;').replace(/</g,'&lt;').replace(/"/igm,'&quot;');
+};
+
+var stripTags = function(str) {
+return str.replace(/<\/?[^>]+>/igm,'');
+};
+
 public static function convertTime( milliSeconds:Number ):String
    {
        var secs:Number = Math.floor(milliSeconds/1000);

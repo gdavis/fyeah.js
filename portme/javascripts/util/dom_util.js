@@ -103,3 +103,21 @@ DOMUtil.recurseDisableElements = function ( elem ) {
     }
   }
 };
+
+
+//This is a third party function written by Martin Honnen
+//In comp.lang.javascript
+//http://groups-beta.google.com/group/comp.lang.javascript/browse_thread/thread/2b389e61c7b951f2/99b5f1bee9922c39?lnk=gst&q=(doc+%3D+node.ownerDocu ment)+%26%26+(win+%3D+doc.defaultView)&rnum=1&hl=e n#99b5f1bee9922c39
+DOMUtil.recurseDisableElements.selectNode =  function ( node ) {
+  var selection, range, doc, win;
+  if ((doc = node.ownerDocument) && (win = doc.defaultView) && typeof win.getSelection != 'undefined' && typeof doc.createRange != 'undefined' && (selection = window.getSelection()) && typeof selection.removeAllRanges != 'undefined') {
+    range = doc.createRange();
+    range.selectNode(node);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  } else if (document.body && typeof document.body.createTextRange != 'undefined' && (range = document.body.createTextRange())) {
+    range.moveToElementText(node);
+    range.select();
+  }
+};
+
