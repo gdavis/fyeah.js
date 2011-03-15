@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  * https://github.com/factorylabs/fyeah.js/blob/master/MIT-LICENSE
  *
- * Date: Tue Feb 15 09:42:35 2011 -0700
+ * Date: Mon Mar 14 22:37:24 2011 -0600
  */
 (function(window, undefined) {
   var document = window.document;
