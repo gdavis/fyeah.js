@@ -1,27 +1,26 @@
-/*global Benchmark */
 
 // http://benchmarkjs.com/docs
 
 var suite = new Benchmark.Suite('Array');
 
-suite.add('Array with brackets', function () {
+suite.add('Array with brackets', function() {
   var a = [];
 });
 
-suite.add('Array with new', function () {
+suite.add('Array with new', function() {
   var a = new Array();
 });
 
-suite.on('start', function () {
+suite.on('start', function() {
   console.log(Benchmark.platform.description);
   console.log('Starting ' + this.name + ' Benchmarks');
 });
 
-suite.on('cycle', function (bench) {
+suite.on('cycle', function(bench) {
   console.log(String(bench));
 });
 
-suite.on('complete', function () {
+suite.on('complete', function() {
   console.log('Fastest is ' + this.filter('fastest').pluck('name'));
   console.log('Slowest is ' + this.filter('slowest').pluck('name'));
   console.log(this.name + ' Benchmarks Complete');
@@ -29,9 +28,7 @@ suite.on('complete', function () {
 
 suite.run(true);
 
-
-
-/* 
+/*
 var suite = new Benchmark.Suite('array', {
   'onStart': Benchmark.log('onStart'),
 
@@ -46,7 +43,7 @@ var suite = new Benchmark.Suite('array', {
   'onComplete': Benchmark.log('onComplete')
 
 });
- 
+
 var bench = new Benchmark('foo', fn, {
 
   // displayed by Benchmark#toString if `name` is not available
