@@ -140,14 +140,14 @@ MathUtil.sums = function( nums ) {
  * 	@use			{@code var vAverage = MathUtil.average( [ 12, 20, 7 ] );}
  */
 MathUtil.average = function( nums ) {
-	return  sums( nums ) / nums.length;
+	return sums( nums ) / nums.length;
 }
 
 /**
  *	Linear interpolate between two values.  
  *	@param		lower	first value (-1.0, 43.6)
  *	@param		upper	second value (-100.0, 3.1415)
-	 *	@param		n	point between values (0.0, 1.0)
+ *	@param		n	point between values (0.0, 1.0)
  * 	@return 		number (12.3, 44.555)
  * 	@use			{@code var value = MathUtil.interp( 10, 20, .5 );  //returns 15}
  */
@@ -167,5 +167,5 @@ MathUtil.interp = function( lower, upper, n ) {
  */
 MathUtil.remap = function( value, lower1, upper1, lower2, upper2 ) 
 {
-	return interp(lower2,upper2, getPercentWithinRange(lower1,upper1,value)/100.);
+	return MathUtil.interp(lower2,upper2, MathUtil.getPercentWithinRange(lower1,upper1,value)/100.);
 }

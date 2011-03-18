@@ -1,3 +1,5 @@
+function ColorUtil() {}
+
 /**
  * Converts rgb color values to hex.
  *
@@ -5,11 +7,11 @@
  * @param	g		green
  * @param	b		blue
  * @return	hex color number
- * @use		{@code var vHex:Number = ColorUtil.rgbToHex( 255, 70, 55 );}
+ * @use		{@code var vHex = ColorUtil.rgbToHex( 255, 70, 55 );}
  */
-public static function rgbToHex( r:Number, g:Number, b:Number ):Number
+ColorUtil.rgbToHex = function( r, g, b )
 {
-      return ( r << 16 | g << 8 | b );
+  return ( r << 16 | g << 8 | b );
 }
 
 /**
@@ -17,16 +19,16 @@ public static function rgbToHex( r:Number, g:Number, b:Number ):Number
  *
  * @param	hex		the hex color number.
  * @return 	an object with r, g, and b color numbers.
- * @use		{@code var vRgb:Number = ColorUtil.hexToRGB( 0xffffff );}
+ * @use		{@code var vRgb = ColorUtil.hexToRGB( 0xffffff );}
  */
-public static function hexToRGB( hex:Number ):Object
+ColorUtil.hexToRGB = function( hex )
 {
 	// bitwise shift the hex numbers.
-      var red:Number = hex >> 16;
-      var grnBlu:Number = hex - ( red << 16 );
-      var grn:Number = grnBlu >> 8;
-      var blu:Number = grnBlu - ( grn << 8 );
-      
-      // return the new object
-      return( { r:red, g:grn, b:blu } );
+  var red = hex >> 16;
+  var grnBlu = hex - ( red << 16 );
+  var grn = grnBlu >> 8;
+  var blu = grnBlu - ( grn << 8 );
+  
+  // return the new object
+  return( { r:red, g:grn, b:blu } );
 }

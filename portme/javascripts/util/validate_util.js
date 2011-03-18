@@ -15,6 +15,15 @@ public final class ValidateUtil
 	}
 	
 	/**
+	 * Checks to see if a string is a valid email. ( Original RegExp by Senocular [http://www.senocular.com/] )
+	 * modified to include the "+" in the local-part by RB.
+	 */
+	public static function isValidEmailJG( email:String ):Boolean {
+	  var regex = new RegExp(/^([a-zA-Z0-9_.-])+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/);
+    return regex.test(email);
+	}
+	
+	/**
 	 * Checks to see if a string is a proper formatted US zip code.
 	 * 12345 and 12345-1234 will return true.
 	 */

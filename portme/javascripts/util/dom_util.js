@@ -58,32 +58,32 @@ DOMUtil.createElement = function( type, params, parent ) {
   return el;
 };
 
-DOMUtil.getRE = function( name ) {
-  return new RegExp( '\\b' + name + '\\b', 'g' );
+DOMUtil.getRE = function( regex ) {
+  return new RegExp( '\\b' + regex + '\\b', 'g' );
 };
 
 DOMUtil.hasClass = function( el, name ) {
-  return this.getRE( name ).test( el.className );
+  return DOMUtil.getRE( name ).test( el.className );
 };
 
 DOMUtil.addClass = function( el, name ) {
-  if( !this.hasClass( el, name ) ) {
+  if( !DOMUtil.hasClass( el, name ) ) {
     el.className += ' ' + name;
   }
 };
 
 DOMUtil.removeClass = function( el, name ) {
-  el.className = el.className.replace( this.getRE( name ), '' );
+  el.className = el.className.replace( DOMUtil.getRE( name ), '' );
 };
 
 DOMUtil.toggleClass = function( el, name, on ) {
   if( on === undefined ) {
-    on = !this.hasClass( el, name );
+    on = !DOMUtil.hasClass( el, name );
   }
   if( on ) {
-    this.addClass( el, name );
+    DOMUtil.addClass( el, name );
   } else {
-    this.removeClass( el, name );
+    DOMUtil.removeClass( el, name );
   }
 };
 
@@ -91,14 +91,14 @@ DOMUtil.recurseDisableElements = function ( elem ) {
   if( elem ) {
     // disable clicking/dragging
     try {
-      elem.onmousedown = function(e){return false;};  // TODO: remove this is touch events, so we can click inside??
+      elem.onmousedown = function(e){return false;};  // TODO: remove this if touch events, so we can click inside??
       elem.onselectstart = function(){return false;}
     } catch(err) {}
 
     // loop through children and do the same
     if( elem.childNodes.length > 0 ) {
       for( var i=0; i < elem.childNodes.length; i++ ) {
-        this.recurseDisableElements( elem.childNodes[i] );
+        DOMUtil.recurseDisableElements( elem.childNodes[i] );
       }
     }
   }
