@@ -4,14 +4,14 @@ IDevice.PORTRAIT = 'portrait';
 IDevice.LANDSCAPE = 'landscape';
 
 IDevice.preventMobileSafariBounce = function() {
-    // prevents mobile safari from bouncing
+    // prevents mobile safari from bouncing, but also prevents other potentially-desired bahavior
     document.ontouchmove = function(event) {
     	event.preventDefault();
     };
 };
 
 IDevice.addOrientationListener = function( callback ) {
-    if (window.orientation !== undefined) {
+    if (window.orientation !== 'undefined') {
     	//this.is_running_on_device = true;
     	window.onorientationchange = function (event) {
     		if (Math.abs(window.orientation) % 180 === 90) {

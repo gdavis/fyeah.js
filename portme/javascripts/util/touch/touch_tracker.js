@@ -122,12 +122,6 @@ MouseAndTouchTracker.prototype.onStart = function ( touchEvent ) {
 
   // callback
   if( this.delegate ) this.delegate.touchUpdated( MouseAndTouchTracker.state_start, touchEvent );
-
-  // was up top....
-  // var target = (touchEvent.target.nodeType == 3) ? Element.up(touchEvent.target) : touchEvent.target;
-  // if (Element.hasClassName(target, 'ignored') || Element.up(target, '.ignored')) return;
-  // unused???
-  //    if( this.is_touch_capable && this.stops_propagation ) touchEvent.stopPropagation();  
 };
 
 MouseAndTouchTracker.prototype.onMove = function ( touchEvent ) {

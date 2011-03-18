@@ -5,7 +5,7 @@ StringUtil.toClassName = function(str) {
   var arr = str.replace(/[_|\-]/gi, ' ').replace(/\s+/gi, ' ').split(' ');
   for (var i = 0; i < arr.length; i++) words.push(arr[i][0].toUpperCase() + arr[i].substr(1));
   return words.join('');
-}
+};
 
 StringUtil.escapeHTML = function(str) {
   return str.replace(/&/g,'&amp;').replace(/>/g,'&gt;').replace(/</g,'&lt;').replace(/"/igm,'&quot;');
@@ -32,7 +32,7 @@ StringUtil.convertTime = function( milliSeconds ) {
    } else {
      return( minsStr + ":" + secsStr );
    }
-}
+};
    
    
    
@@ -54,7 +54,7 @@ StringUtil.afterFirst = function(p_string, p_char) {
 	if (idx == -1) { return ''; }
 	idx += p_char.length;
 	return p_string.substr(idx);
-}
+};
 
 /**
 *	Returns everything after the last occurence of the provided character in p_string.
@@ -73,7 +73,7 @@ StringUtil.afterLast = function(p_string, p_char) {
 	if (idx == -1) { return ''; }
 	idx += p_char.length;
 	return p_string.substr(idx);
-}
+};
 
 /**
 *	Determines whether the specified string begins with the specified prefix.
@@ -89,7 +89,7 @@ StringUtil.afterLast = function(p_string, p_char) {
 StringUtil.beginsWith = function(p_string, p_begin) {
 	if (p_string == null) { return false; }
 	return new RegExp("^"+p_begin).test(p_string);
-}
+};
 
 /**
 *	Returns everything before the first occurrence of the provided character in the string.
@@ -107,7 +107,7 @@ StringUtil.beforeFirst = function(p_string, p_char) {
 	var idx = p_string.indexOf(p_char);
  	if (idx == -1) { return ''; }
  	return p_string.substr(0, idx);
-}
+};
 
 /**
 *	Returns everything before the last occurrence of the provided character in the string.
@@ -125,7 +125,7 @@ StringUtil.beforeLast = function(p_string, p_char) {
 	var idx = p_string.lastIndexOf(p_char);
  	if (idx == -1) { return ''; }
  	return p_string.substr(0, idx);
-}
+};
 
 /**
 *	Returns everything after the first occurance of p_start and before
@@ -151,7 +151,7 @@ StringUtil.between = function(p_string, p_start, p_end) {
 		if (endIdx != -1) { str = p_string.substr(startIdx, endIdx-startIdx); }
 	}
 	return str;
-}
+};
 
 /**
 *	Description, Utility method that intelligently breaks up your string,
@@ -188,7 +188,7 @@ StringUtil.block = function(p_string, p_len, p_delim) {
 		chrIndex += subString.length;
 	}
 	return arr;
-}
+};
 
 /**
 *	Capitallizes the first word in a string or all words..
@@ -203,10 +203,10 @@ StringUtil.block = function(p_string, p_len, p_delim) {
 *	@tiptext
 */
 StringUtil.capitalize = function(p_string, p_all) {
-	var str = trimLeft(p_string);
-	if (p_all === true) { return str.replace(/^.|\s+(.)/, _upperCase);}
-	else { return str.replace(/(^\w)/, _upperCase); }
-}
+	var str = StringUtil.trimLeft(p_string);
+	if (p_all === true) { return str.replace(/^.|\s+(.)/, StringUtil._upperCase);}
+	else { return str.replace(/(^\w)/, StringUtil._upperCase); }
+};
 
 /**
 *	Determines whether the specified string contains any instances of p_char.
@@ -222,7 +222,7 @@ StringUtil.capitalize = function(p_string, p_all) {
 StringUtil.contains = function(p_string, p_char) {
 	if (p_string == null) { return false; }
 	return p_string.indexOf(p_char) != -1;
-}
+};
 
 /**
 *	Determines the number of times a charactor or sub-string appears within the string.
@@ -239,10 +239,10 @@ StringUtil.contains = function(p_string, p_char) {
 */
 StringUtil.countOf = function(p_string, p_char, p_caseSensitive) {
 	if (p_string == null) { return 0; }
-	var char = escapePattern(p_char);
+	var char = StringUtil.escapePattern(p_char);
 	var flags = (!p_caseSensitive) ? 'ig' : 'g';
 	return p_string.match(new RegExp(char, flags)).length;
-}
+};
 
 /**
 *	Levenshtein distance (editDistance) is a measure of the similarity between two strings,
@@ -288,11 +288,11 @@ StringUtil.editDistance = function(p_source, p_target) {
 			if (s_i == t_j) { cost = 0; }
 			else { cost = 1; }
 
-			d[i][j] = _minimum(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+cost);
+			d[i][j] = StringUtil._minimum(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+cost);
 		}
 	}
 	return d[n][m];
-}
+};
 
 /**
 *	Determines whether the specified string ends with the specified suffix.
@@ -307,7 +307,7 @@ StringUtil.editDistance = function(p_source, p_target) {
 */
 StringUtil.endsWith = function(p_string, p_end) {
 	return new RegExp(p_end+"$").test(p_string);
-}
+};
 
 /**
 *	Determines whether the specified string contains text.
@@ -321,7 +321,7 @@ StringUtil.endsWith = function(p_string, p_end) {
 StringUtil.hasText = function(p_string) {
 	var str = removeExtraWhitespace(p_string);
 	return !!str.length;
-}
+};
 
 /**
 *	Determines whether the specified string contains any characters.
@@ -335,7 +335,7 @@ StringUtil.hasText = function(p_string) {
 StringUtil.isEmpty = function(p_string) {
 	if (p_string == null || typeof p_string === 'undefined') { return true; }
 	return !p_string.length;
-}
+};
 
 /**
 *	Determines whether the specified string is numeric.
@@ -350,7 +350,7 @@ StringUtil.isNumeric = function(p_string) {
 	if (p_string == null) { return false; }
 	var regx:RegExp = /^[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?$/;
 	return regx.test(p_string);
-}
+};
 
 /**
 * Pads p_string with specified character to a specified length from the left.
@@ -369,7 +369,7 @@ StringUtil.padLeft = function(p_string, p_padChar, p_length) {
 	var s = p_string;
 	while (s.length < p_length) { s = p_padChar + s; }
 	return s;
-}
+};
 
 /**
 * Pads p_string with specified character to a specified length from the right.
@@ -388,7 +388,7 @@ StringUtil.padRight = function(p_string, p_padChar, p_length) {
 	var s = p_string;
 	while (s.length < p_length) { s += p_padChar; }
 	return s;
-}
+};
 
 /**
 *	Removes all instances of the remove string in the input string.
@@ -406,10 +406,10 @@ StringUtil.padRight = function(p_string, p_padChar, p_length) {
 */
 StringUtil.remove = function(p_string, p_remove, p_caseSensitive) {
 	if (p_string == null) { return ''; }
-	var rem = escapePattern(p_remove);
+	var rem = StringUtil.escapePattern(p_remove);
 	var flags = (!p_caseSensitive) ? 'ig' : 'g';
 	return p_string.replace(new RegExp(rem, flags), '');
-}
+};
 
 /**
 *	Removes extraneous whitespace (extra spaces, tabs, line breaks, etc) from the
@@ -423,9 +423,9 @@ StringUtil.remove = function(p_string, p_remove, p_caseSensitive) {
 */
 StringUtil.removeExtraWhitespace = function(p_string) {
 	if (p_string == null) { return ''; }
-	var str = trim(p_string);
+	var str = StringUtil.trim(p_string);
 	return str.replace(/\s+/g, ' ');
-}
+};
 
 /**
 *	Returns the specified string in reverse character order.
@@ -439,7 +439,7 @@ StringUtil.removeExtraWhitespace = function(p_string) {
 StringUtil.reverse = function(p_string) {
 	if (p_string == null) { return ''; }
 	return p_string.split('').reverse().join('');
-}
+};
 
 /**
 *	Returns the specified string in reverse word order.
@@ -453,7 +453,7 @@ StringUtil.reverse = function(p_string) {
 StringUtil.reverseWords = function(p_string) {
 	if (p_string == null) { return ''; }
 	return p_string.split(/\s+/).reverse().join('');
-}
+};
 
 /**
 *	Determines the percentage of similiarity, based on editDistance
@@ -471,7 +471,22 @@ StringUtil.similarity = function(p_source, p_target) {
 	var maxLen = Math.max(p_source.length, p_target.length);
 	if (maxLen == 0) { return 100; }
 	else { return (1 - ed/maxLen) * 100; }
-}
+};
+
+/**
+* Escapes all of the characters in a string to create a friendly "quotable" sting
+*
+* @param p_string The string that will be checked for instances of remove
+* string
+*
+* @returns String
+*
+* @tiptext
+*/
+StringUtil.quote = function(p_string) {
+  var regx = new RegExp(/[\\"\r\n]/g);
+  return '"'+ p_string.replace(regx, StringUtil._quote) +'"';
+};
 
 /**
 *	Remove's all < and > based tags from a string
@@ -485,7 +500,7 @@ StringUtil.similarity = function(p_source, p_target) {
 StringUtil.stripTags = function(p_string) {
 	if (p_string == null) { return ''; }
 	return p_string.replace(/<\/?[^>]+>/igm, '');
-}
+};
 
 
 /**
@@ -502,7 +517,21 @@ StringUtil.stripTags = function(p_string) {
 StringUtil.trim = function(p_string) {
 	if (p_string == null) { return ''; }
 	return p_string.replace(/^\s+|\s+$/g, '');
-}
+};
+
+/**
+* Swaps the casing of a string.
+*
+* @param p_string The source string.
+*
+* @returns String
+*
+* @tiptext
+*/
+StringUtil.swapCase = function(p_string:String):String {
+  if (p_string == null) { return ''; }
+  return p_string.replace(/(\w)/, StringUtil._swapCase);
+};
 
 /**
 *	Removes whitespace from the front (left-side) of the specified string.
@@ -516,7 +545,7 @@ StringUtil.trim = function(p_string) {
 StringUtil.trimLeft = function(p_string) {
 	if (p_string == null) { return ''; }
 	return p_string.replace(/^\s+/, '');
-}
+};
 
 /**
 *	Removes whitespace from the end (right-side) of the specified string.
@@ -530,7 +559,7 @@ StringUtil.trimLeft = function(p_string) {
 StringUtil.trimRight = function(p_string) {
 	if (p_string == null) { return ''; }
 	return p_string.replace(/\s+$/, '');
-}
+};
 
 /**
 *	Determins the number of words in a string.
@@ -544,7 +573,7 @@ StringUtil.trimRight = function(p_string) {
 StringUtil.wordCount = function(p_string) {
 	if (p_string == null) { return 0; }
 	return p_string.match(/\b\w+\b/g).length;
-}
+};
 
 /**
 *	Returns a string truncated to a specified length with optional suffix
@@ -568,25 +597,24 @@ StringUtil.truncate = function(p_string, p_len = -1, p_suffix) {
 	if (trunc.length > p_len) {
 		trunc = trunc.substr(0, p_len);
 		if (/[^\s]/.test(p_string.charAt(p_len))) {
-			trunc = trimRight(trunc.replace(/\w+$|\s+$/, ''));
+			trunc = StringUtil.trimRight(trunc.replace(/\w+$|\s+$/, ''));
 		}
 		trunc += p_suffix;
 	}
 
 	return trunc;
-}
+};
 
 /* **************************************************************** */
 /*	These are helper methods used by some of the above methods.		*/
 /* **************************************************************** */
 StringUtil.escapePattern = function(p_pattern) {
-	// RM: might expose this one, I've used it a few times already.
 	return p_pattern.replace(/(\]|\[|\{|\}|\(|\)|\*|\+|\?|\.|\\)/g, '\\$1');
-}
+};
 
 StringUtil._minimum = function(a, b, c) {
 	return Math.min(a, Math.min(b, Math.min(c,a)));
-}
+};
 
 StringUtil._quote = function(p_string) {
 	switch (p_string) {
@@ -601,15 +629,13 @@ StringUtil._quote = function(p_string) {
 		default:
 			return '';
 	}
-}
+};
 
-private static function _upperCase(p_char, ...args) 
-{
+StringUtil._upperCase = function(p_char) {
 	return p_char.toUpperCase();
-}
+};
 
-private static function _swapCase(p_char, ...args) 
-{
+StringUtil._swapCase = function(p_char) {
 	var lowChar = p_char.toLowerCase();
 	var upChar = p_char.toUpperCase();
 	switch (p_char) {
@@ -620,4 +646,4 @@ private static function _swapCase(p_char, ...args)
 		default:
 			return p_char;
 	}
-}
+};
