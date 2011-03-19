@@ -1,5 +1,5 @@
 function MouseAndTouchTracker ( touchObject, delegate, isMouseUpTracking ) {
-  // positioning / tracking
+  // positioning / tracking coordinates
   this.container_position = { x:0, y:0 };
   this.touchstart = { x : 0, y : 0 };
   this.touchcurrent = { x : 0, y : 0 };
@@ -7,11 +7,10 @@ function MouseAndTouchTracker ( touchObject, delegate, isMouseUpTracking ) {
 	this.touchmoved = { x : 0, y : 0 };
 	this.touchspeed = { x : 0, y : 0 };
 	
-	// flags
+	// state flags
 	this.is_touching = false;
 	this.is_touch_capable = false;
 	this.has_moved = false;
-	this.stops_propagation = false;
 	this.touch_inside = false;  // helps with enter/leave events
   
   // store parameters

@@ -9,8 +9,7 @@ function ColorUtil() {}
  * @return	hex color number
  * @use		{@code var vHex = ColorUtil.rgbToHex( 255, 70, 55 );}
  */
-ColorUtil.rgbToHex = function( r, g, b )
-{
+ColorUtil.rgbToHex = function( r, g, b ) {
   return ( r << 16 | g << 8 | b );
 }
 
@@ -21,8 +20,7 @@ ColorUtil.rgbToHex = function( r, g, b )
  * @return 	an object with r, g, and b color numbers.
  * @use		{@code var vRgb = ColorUtil.hexToRGB( 0xffffff );}
  */
-ColorUtil.hexToRGB = function( hex )
-{
+ColorUtil.hexToRGB = function( hex ) {
 	// bitwise shift the hex numbers.
   var red = hex >> 16;
   var grnBlu = hex - ( red << 16 );
