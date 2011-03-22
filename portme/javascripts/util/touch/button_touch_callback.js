@@ -1,16 +1,13 @@
-function ButtonTouchCallback( element, callback ) {
+function ButtonTouchCallback( element, callback, highlights ) {
+  // store/set parameters/state
   this.element = element;
   this.callback = callback;
-  this.touch_tracker = false;
+  this.highlights_on_touch = highlights || true;
   this.started_touching = false;
-  this.highlights_on_touch = true;
-  this.init();
-}
-
-ButtonTouchCallback.prototype.init = function() {
-  // init touch tracking for showing/hiding menu
+  this.CANCEL_THRESHOLD = 3;
+  // create touch tracker
 	this.touch_tracker = new MouseAndTouchTracker( this.element, this );
-};
+}
 
 ButtonTouchCallback.prototype.touchUpdated = function ( touchState, touchEvent ) {
   // handle touch feedback with opacity

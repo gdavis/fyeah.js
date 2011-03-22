@@ -11,7 +11,7 @@ function MouseAndTouchTracker ( touchObject, delegate, isMouseUpTracking ) {
 	this.is_touching = false;
 	this.is_touch_capable = false;
 	this.has_moved = false;
-	this.touch_inside = false;  // helps with enter/leave events
+	this.touch_is_inside = false;  // helps with enter/leave events
   
   // store parameters
 	this.container = touchObject;
@@ -105,7 +105,7 @@ MouseAndTouchTracker.prototype.onStart = function ( touchEvent ) {
 
   // get mouse/touch coordinates
   this.is_touching = true;
-  this.touch_inside = true;
+  this.touch_is_inside = true;
   if(!this.is_mouseup_tracking) {
     this.touchstart.x = ( this.is_touch_capable ) ? touchEvent.touches[0].clientX : touchEvent.clientX;
     this.touchstart.y = ( this.is_touch_capable ) ? touchEvent.touches[0].clientY : touchEvent.clientY;
@@ -152,11 +152,11 @@ MouseAndTouchTracker.prototype.onMove = function ( touchEvent ) {
 
   // check for mouse in/out and make the call if it's changed
   if(this.touchcurrent.x < 0 || this.touchcurrent.x > this.container.offsetWidth || this.touchcurrent.y < 0 || this.touchcurrent.y > this.container.offsetHeight) {
-    if(this.touch_inside) this.onLeave();
-    this.touch_inside = false;
+    if(this.touch_is_inside) this.onLeave();
+    this.touch_is_inside = false;
   } else {
-    if(!this.touch_inside) this.onEnter();
-    this.touch_inside = true;
+    if(!this.touch_is_inside) this.onEnter();
+    this.touch_is_inside = true;
   }
 };
 

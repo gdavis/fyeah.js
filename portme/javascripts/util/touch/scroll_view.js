@@ -1,6 +1,10 @@
+/**
+ * Base touch tracking on an html element
+ * @requires touch_tracker.js
+ */
 var ScrollViewTouchTracker = Class.create( {
-	initialize : function( touchObject ) {
-		this.touch_tracker = new MouseAndTouchTracker( touchObject, this );
+	initialize : function( element ) {
+		this.touch_tracker = new MouseAndTouchTracker( element, this );
 	},
 	touchUpdated : function ( touchState, touchEvent ) {
     switch( touchState ) {
@@ -13,25 +17,42 @@ var ScrollViewTouchTracker = Class.create( {
       case MouseAndTouchTracker.state_end :
         this.onEnd(touchEvent);
         break;
+      case MouseAndTouchTracker.state_enter :
+        this.onEnter(touchEvent);
+        break;
+      case MouseAndTouchTracker.state_leave :
+        this.onLeave(touchEvent);
+        break;
     }
   },
 	onStart : function(touchEvent) { },
 	onMove : function(touchEvent) { },
 	onEnd : function(touchEvent) { },
+	onEnter : function() {},
+	onLeave : function() {},
 	dispose : function() {
 		this.touch_tracker.dispose();
 		delete this.touch_tracker;
 	}
 });
 
-
+/**
+ * @requires platform_helper.js
+ */
 var ScrollView = Class.create(ScrollViewTouchTracker, {
+  platform_helper : false,
 	cur_position : false,
 	container_size : false,
 	content_size : false,
 	scroll_enabled_x : true,
 	scroll_enabled_y : true,
 	scroll_content : false,
+	base_inline_css : false,
+	CSS_HAND : 'cursor:hand; cursor:grab; cursor:-moz-grab; cursor:-webkit-grab;',
+	CSS_HAND_CUR : 'cursor: url(media/cursors/openhand.cur), default !important;',
+	CSS_HAND_GRAB : 'cursor:grabbing; cursor:-moz-grabbing; cursor:-webkit-grabbing;',
+	CSS_HAND_GRAB_CUR : 'cursor: url(media/cursors/closedhand.cur), default !important;',
+	
 	initialize : function( $super, touchObject, scrollElementInner ) {
 		$super( touchObject );
 
@@ -39,9 +60,12 @@ var ScrollView = Class.create(ScrollViewTouchTracker, {
 		this.container_size = { width:0, height:0 };
 		this.content_size = { width:0, height:0 };
 		this.scroll_content = scrollElementInner;
-
-    platform_helper.convertPosToWebkitTransform( this.scroll_content );
-		platform_helper.update2DPosition( this.scroll_content, 0, 0 );                     
+		
+		this.base_inline_css = this.touch_tracker.container.getAttribute("style") || '';
+    
+    this.platform_helper = new PlatformHelper();
+    this.platform_helper.convertPosToWebkitTransform( this.scroll_content );
+		this.platform_helper.update2DPosition( this.scroll_content, 0, 0 );                     
 		
 		this.calculateDimensions();
 	},
@@ -58,10 +82,11 @@ var ScrollView = Class.create(ScrollViewTouchTracker, {
 		this.updatePositionCSS();
 	},
 	updatePositionCSS : function() {
-	  platform_helper.update2DPosition( this.scroll_content, this.cur_position.x, this.cur_position.y );                     
+	  this.platform_helper.update2DPosition( this.scroll_content, this.cur_position.x, this.cur_position.y );                     
 	},
 	onStart : function($super, touchEvent) {
 		$super( touchEvent );
+    this.cursorSetGrabbyHand();
 	},
 	onMove : function($super, touchEvent) {
 		$super( touchEvent );
@@ -69,13 +94,43 @@ var ScrollView = Class.create(ScrollViewTouchTracker, {
 	},
 	onEnd : function($super, touchEvent) {
 		$super( touchEvent );
+		if(this.touch_tracker.touch_is_inside) this.cursorSetHand();
+		else this.cursorSetDefault();
+	},
+	onEnter : function($super, touchEvent) {
+		$super( touchEvent );
+		if(!this.touch_tracker.is_touching) this.cursorSetHand();
+	},
+	onLeave : function($super, touchEvent) {
+		$super( touchEvent );
+		if(this.touch_tracker.is_touching) this.cursorSetGrabbyHand();
+		else this.cursorSetDefault();
+	},
+	cursorSetDefault : function() {
+	  this.touch_tracker.container.setAttribute('style', this.base_inline_css);
+	},
+	cursorSetHand : function() {
+    if( this.platform_helper.is_chrome || this.platform_helper.is_msie ) {
+      this.touch_tracker.container.setAttribute('style', this.base_inline_css + this.CSS_HAND + this.CSS_HAND_CUR);
+    } else {
+      this.touch_tracker.container.setAttribute('style', this.base_inline_css + this.CSS_HAND);
+    }
+	},
+	cursorSetGrabbyHand : function() {
+    if( this.platform_helper.is_chrome || this.platform_helper.is_msie ) {
+      this.touch_tracker.container.setAttribute('style', this.base_inline_css + this.CSS_HAND_GRAB + this.CSS_HAND_GRAB_CUR);
+    } else {
+      this.touch_tracker.container.setAttribute('style', this.base_inline_css + this.CSS_HAND_GRAB);
+    }
 	},
 	dispose : function($super) {
 		this.timer_active = false;
 		this.cur_position = false;
 		this.container_size = false;
 		this.content_size = false;
-		platform_helper.update2DPosition( this.scroll_content, 0, 0 );                     
+		this.base_inline_css = false;
+		this.platform_helper.update2DPosition( this.scroll_content, 0, 0 );
+		this.platform_helper = null;
 		$super();
 	}
 });
