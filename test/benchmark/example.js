@@ -1,6 +1,13 @@
 
 // http://benchmarkjs.com/docs
 
+var pre = document.getElementById('log');
+
+function tracer(msg) {
+  console.log(msg);
+  pre.innerHTML += msg + '\n';
+}
+
 var suite = new Benchmark.Suite('Array');
 
 suite.add('Array with brackets', function() {
@@ -12,18 +19,18 @@ suite.add('Array with new', function() {
 });
 
 suite.on('start', function() {
-  console.log(Benchmark.platform.description);
-  console.log('Starting ' + this.name + ' Benchmarks');
+  tracer(Benchmark.platform.description);
+  tracer('Starting ' + this.name + ' Benchmarks');
 });
 
 suite.on('cycle', function(bench) {
-  console.log(String(bench));
+  tracer(String(bench));
 });
 
 suite.on('complete', function() {
-  console.log('Fastest is ' + this.filter('fastest').pluck('name'));
-  console.log('Slowest is ' + this.filter('slowest').pluck('name'));
-  console.log(this.name + ' Benchmarks Complete');
+  tracer('Fastest is ' + this.filter('fastest').pluck('name'));
+  tracer('Slowest is ' + this.filter('slowest').pluck('name'));
+  tracer(this.name + ' Benchmarks Complete');
 });
 
 suite.run(true);

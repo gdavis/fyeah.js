@@ -1,23 +1,17 @@
-/*!
- * fyeah JavaScript Toolkit v0.0.1
- * http://www.factorylabs.com/
- *
- * Copyright 2011, Factory Design Labs
- * Licensed under the MIT license.
- * https://github.com/factorylabs/fyeah.js/blob/master/MIT-LICENSE
- *
- * Date: Mon Mar 14 22:37:24 2011 -0600
- */
-(function(window, undefined) {
-  var document = window.document;
 
+(function(global) {
+  var fyeah = function() {
+    return this;
+  }
+  fyeah.VERSION = '0.0.1';
 
-var fyeah = (function() {
-  // expose fyeah to the global object
-  return fyeah;
-}());
+  if (global.fyeah) {
+    throw new Error('fyeah has already been defined');
+  } else {
+    global.fyeah = fyeah;
+    if (typeof exports !== 'undefined')
+      exports.fyeah = fyeah;
+  }
 
-
-  window.fyeah = fyeah;
-})(window);
+}(typeof window === 'undefined' ? this : window));
 

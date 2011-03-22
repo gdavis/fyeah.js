@@ -6,11 +6,8 @@ DIST_DIR = ${PREFIX}/dist
 TOOLS_DIR = ${PREFIX}/tools
 MINIFIER = ${TOOLS_DIR}/closure-compiler/compiler.jar
 
-BASE_FILES = ${SRC_DIR}/core.js
+MODULES = ${SRC_DIR}/core.js
 
-MODULES = ${SRC_DIR}/_intro.js\
-					${BASE_FILES}\
-					${SRC_DIR}/_outro.js
 
 FY = ${DIST_DIR}/fyeah.js
 FY_MIN = ${DIST_DIR}/fyeah.min.js
