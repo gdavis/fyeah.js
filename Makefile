@@ -8,15 +8,11 @@ MINIFIER = ${TOOLS_DIR}/closure-compiler/compiler.jar
 
 MODULES = ${SRC_DIR}/core.js
 
-
 FY = ${DIST_DIR}/fyeah.js
 FY_MIN = ${DIST_DIR}/fyeah.min.js
 
 FY_VER = $(shell cat version.txt)
 VER = sed "s/@VERSION/${FY_VER}/"
-
-BENCH_URL = https://github.com/mathiasbynens/Benchmark.js/raw/master/benchmark.js
-BENCH = ${TOOLS_DIR}/benchmark.js
 
 DATE = $(shell git log -1 --pretty=format:%ad)
 
@@ -53,20 +49,10 @@ docs:
 bench:
 	@open test/benchmark/index.html
 
-bench_update: bench_clean ${BENCH}
-
-bench_clean:
-	@echo "Removing:" ${BENCH}
-	@rm -rf ${BENCH}
-
-${BENCH}: ${TOOLS_DIR}
-	@echo "Updating" ${BENCH}
-	@curl -o ${BENCH} ${BENCH_URL}
-
 clean:
 	@echo "Removing:" ${DIST_DIR}
 	@rm -rf ${DIST_DIR}
 
 
-.PHONY: all fyeah min test docs bench bench_update bench_clean clean
+.PHONY: all fyeah min test docs bench clean
 
