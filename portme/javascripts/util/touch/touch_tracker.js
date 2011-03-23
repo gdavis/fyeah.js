@@ -1,4 +1,4 @@
-function MouseAndTouchTracker ( touchObject, delegate, isMouseUpTracking ) {
+function MouseAndTouchTracker ( element, delegate, isMouseUpTracking ) {
   // positioning / tracking coordinates
   this.container_position = { x:0, y:0 };
   this.touchstart = { x : 0, y : 0 };
@@ -14,7 +14,7 @@ function MouseAndTouchTracker ( touchObject, delegate, isMouseUpTracking ) {
 	this.touch_is_inside = false;  // helps with enter/leave events
   
   // store parameters
-	this.container = touchObject;
+	this.container = element;
 	this.delegate = delegate;
 	this.is_mouseup_tracking = isMouseUpTracking;
   
@@ -40,9 +40,8 @@ function MouseAndTouchTracker ( touchObject, delegate, isMouseUpTracking ) {
   	document.addEventListener( "touchend", this.endDocumentFunction, false );
   }
   
-  // TODO: touchEvent.preventDefault(); seemed to be necessary on Android
-  // TODO: also, Android didn't like recurseDisableElements() being called on the container
-  if(!this.is_mouseup_tracking) this.recurseDisableElements( this.container );
+  // 
+  if(!this.is_mouseup_tracking && !navigator.userAgent.match(/Android/i)) this.recurseDisableElements( this.container );
 }
 
 // add static constants
@@ -70,22 +69,20 @@ MouseAndTouchTracker.prototype.recurseDisableElements = function ( elem ) {
   }
 };
 
-
-
 MouseAndTouchTracker.prototype.disposeTouchListeners = function () {
 	this.container.removeEventListener( "touchstart", this.startFunction, false );
 	this.container.removeEventListener( "touchend", this.endFunction, false );
 	this.container.removeEventListener( "touchcancel", this.endFunction, false );
 	document.removeEventListener( "touchmove", this.moveFunction, false );
 	document.removeEventListener( "touchend", this.endDocumentFunction, false );
-}
+};
 
 MouseAndTouchTracker.prototype.disposeMouseListeners = function () {
   if( this.container.attachEvent ) this.container.detachEvent( "onmousedown", this.startFunction ); else this.container.removeEventListener( "mousedown", this.startFunction );
   if( this.container.attachEvent ) this.container.detachEvent( "onmouseup", this.endFunction ); else this.container.removeEventListener( "mouseup", this.endFunction );
   if( document.attachEvent ) document.detachEvent( "onmouseup", this.endDocumentFunction ); else document.removeEventListener( "mouseup", this.endDocumentFunction );
   if( document.attachEvent ) document.detachEvent( "onmousemove", this.moveFunction ); else document.removeEventListener( "mousemove", this.moveFunction );
-}
+};
 
 MouseAndTouchTracker.prototype.onStart = function ( touchEvent ) {
   // HACK for Android - otherwise touchmove events don't fire. See: http://code.google.com/p/android/issues/detail?id=5491
@@ -200,7 +197,7 @@ MouseAndTouchTracker.prototype.dispose = function () {
 };
 
 MouseAndTouchTracker.prototype.findPos = function(obj) {
-  // cobbled from
+  // cobbled from:
   // http://javascript.about.com/od/browserobjectmodel/a/bom12.htm
   // http://www.quirksmode.org/js/findpos.html
   // with original code to handle webkitTransform positioning added into the mix
