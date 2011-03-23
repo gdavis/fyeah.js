@@ -10,6 +10,25 @@ DOMUtil.getHeight = function( elem ) {
   else return -1;
 };
 
+DOMUtil.getWindowSize = function() {
+  var myWidth = 0, myHeight = 0;
+
+  if (typeof(window.innerWidth) == 'number') {
+    //Non-IE
+    myWidth = window.innerWidth;
+    myHeight = window.innerHeight;
+  } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
+    //IE 6+ in 'standards compliant mode'
+    myWidth = document.documentElement.clientWidth;
+    myHeight = document.documentElement.clientHeight;
+  } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
+    //IE 4 compatible
+    myWidth = document.body.clientWidth;
+    myHeight = document.body.clientHeight;
+  }
+  return {width:myWidth, height:myHeight};
+};
+
 DOMUtil.show = function( elem ) {
   if( elem ) elem.style.display = 'inline';
 };
@@ -108,7 +127,7 @@ DOMUtil.recurseDisableElements = function ( elem ) {
 //This is a third party function written by Martin Honnen
 //In comp.lang.javascript
 //http://groups-beta.google.com/group/comp.lang.javascript/browse_thread/thread/2b389e61c7b951f2/99b5f1bee9922c39?lnk=gst&q=(doc+%3D+node.ownerDocu ment)+%26%26+(win+%3D+doc.defaultView)&rnum=1&hl=e n#99b5f1bee9922c39
-DOMUtil.recurseDisableElements.selectNode =  function ( node ) {
+DOMUtil.selectNode =  function ( node ) {
   var selection, range, doc, win;
   if ((doc = node.ownerDocument) && (win = doc.defaultView) && typeof win.getSelection != 'undefined' && typeof doc.createRange != 'undefined' && (selection = window.getSelection()) && typeof selection.removeAllRanges != 'undefined') {
     range = doc.createRange();

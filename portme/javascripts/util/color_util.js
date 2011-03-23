@@ -11,7 +11,7 @@ function ColorUtil() {}
  */
 ColorUtil.rgbToHex = function( r, g, b ) {
   return ( r << 16 | g << 8 | b );
-}
+};
 
 /**
  * Converts a hex color number to an object with r, g, b properties.
@@ -29,4 +29,8 @@ ColorUtil.hexToRGB = function( hex ) {
   
   // return the new object
   return( { r:red, g:grn, b:blu } );
-}
+};
+
+ColorUtil.randomColor = function() {
+  return '#'+Math.floor(Math.random()*16777215).toString(16);
+};
