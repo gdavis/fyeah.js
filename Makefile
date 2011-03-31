@@ -4,7 +4,7 @@ SRC_DIR = src
 TEST_DIR = test
 DIST_DIR = ${PREFIX}/dist
 TOOLS_DIR = ${PREFIX}/tools
-MINIFIER = ${TOOLS_DIR}/closure-compiler/compiler.jar
+MINIFIER = ${TOOLS_DIR}/closure/compiler.jar
 
 MODULES = ${SRC_DIR}/core.js
 
@@ -23,9 +23,6 @@ all: clean fyeah min
 ${DIST_DIR}:
 	@mkdir -p ${DIST_DIR}
 
-${TOOLS_DIR}:
-	@mkdir -p ${TOOLS_DIR}
-
 fyeah: ${FY}
 
 ${FY}: ${MODULES} | ${DIST_DIR}
@@ -41,13 +38,13 @@ ${FY_MIN}: fyeah
 	@java -jar ${MINIFIER} --js ${FY} --js_output_file ${FY_MIN} --summary_detail_level 3
 
 test:
-	@echo "The test task is not ready"
+	@node test/cli_runner.js
 
 docs:
 	@echo "The docs task is not ready"
 
 bench:
-	@open test/benchmark/index.html
+	@node benchmark/javascripts/node-bench.js
 
 clean:
 	@echo "Removing:" ${DIST_DIR}
