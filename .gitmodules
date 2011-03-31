@@ -1,0 +1,3 @@
+[submodule "tools/toolkitt"]
+	path = tools/toolkitt
+	url = https://github.com/mkitt/toolkitt.git
