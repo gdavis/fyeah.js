@@ -2,7 +2,8 @@
 (function(global) {
   var fyeah = function() {
     return this;
-  }
+  };
+
   fyeah.VERSION = '@VERSION';
 
   if (global.fyeah) {
