@@ -2,7 +2,8 @@
 (function(global) {
   var fyeah = function() {
     return this;
-  }
+  };
+
   fyeah.VERSION = '0.0.1';
 
   if (global.fyeah) {
