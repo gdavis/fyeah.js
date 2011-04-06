@@ -1,4 +1,6 @@
-function Debug(){}
+function Debug(){
+  this.init();
+}
 
 Debug.prototype.init = function () {
   // create html
@@ -15,10 +17,22 @@ Debug.prototype.init = function () {
   htmlStr += '    <span class="underline">LOG</span>';
   htmlStr += '  </strong>';
   htmlStr += '</div>';
-  htmlStr += '<div id="debug_log"></div>';
+  htmlStr += '<div id="debug_log" style="font-size:10px;color:#111111;white-space:nowrap;overflow:auto;"></div>';
   
   var debugDiv = document.createElement( 'div' );
   debugDiv.id = "debug";
+  debugDiv.style.display = 'block';
+  debugDiv.style.zIndex = '9999';
+  debugDiv.style.position = 'fixed';
+  debugDiv.style.bottom = '0px';
+  debugDiv.style.right = '0px';
+  debugDiv.style.width = '300px';
+  debugDiv.style.height = '200px';
+  debugDiv.style.border = '1px dotted red';
+  debugDiv.style.padding = '8px';
+  debugDiv.style.backgroundColor = '#eeeeee';
+  debugDiv.style.fontSize = '12px';
+  debugDiv.style.color = '#ff0000';
   debugDiv.innerHTML = htmlStr;
   document.body.appendChild( debugDiv );
   
@@ -45,12 +59,16 @@ Debug.prototype.log = function ( newDebugString ) {
     if(minutes < 10) minutes = "0" + minutes;
 
     // log it
-    this.element.innerHTML += "<div>[" + hours + ":" + minutes + "] " + newDebugString + "</div>";
+    var logStr = "<div>[" + hours + ":" + minutes + "] " + newDebugString + "</div>";
+    this.element.innerHTML += logStr;
 
     // if we're over the limit for logging, remove first element
     if( this.element.childNodes.length > this.log_lines ){
       this.element.removeChild( this.element.childNodes[0] );
     }
+    
+    // send to console if it exists
+    window.console && console.log( newDebugString );
   }
 };
 
