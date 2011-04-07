@@ -47,8 +47,9 @@ var Stats = function () {
 	_container.style.opacity = '0.9';
 	_container.style.width = '80px';
 	_container.style.cursor = 'pointer';
-	_container.addEventListener( 'click', swapMode, false );
-
+  // _container.addEventListener( 'click', swapMode, false );
+  if( _container.attachEvent ) _container.attachEvent( 'click', swapMode, false ); else document.addEventListener( 'click', swapMode, false );
+  
 	// fps
 
 	_fpsDiv = document.createElement( 'div' );
@@ -69,12 +70,13 @@ var Stats = function () {
 	_fpsCanvas.style.marginLeft = '3px';
 	_fpsDiv.appendChild( _fpsCanvas );
 
-	_fpsContext = _fpsCanvas.getContext( '2d' );
-	_fpsContext.fillStyle = 'rgb(' + _colors.fps.bg.r + ',' + _colors.fps.bg.g + ',' + _colors.fps.bg.b + ')';
-	_fpsContext.fillRect( 0, 0, _fpsCanvas.width, _fpsCanvas.height );
+  try { 
+  	_fpsContext = _fpsCanvas.getContext( '2d' );
+  	_fpsContext.fillStyle = 'rgb(' + _colors.fps.bg.r + ',' + _colors.fps.bg.g + ',' + _colors.fps.bg.b + ')';
+  	_fpsContext.fillRect( 0, 0, _fpsCanvas.width, _fpsCanvas.height );
 
-	_fpsImageData = _fpsContext.getImageData( 0, 0, _fpsCanvas.width, _fpsCanvas.height );
-
+  	_fpsImageData = _fpsContext.getImageData( 0, 0, _fpsCanvas.width, _fpsCanvas.height );
+  } catch ( error ) { };
 	// ms
 
 	_msDiv = document.createElement( 'div' );
@@ -95,13 +97,14 @@ var Stats = function () {
 	_msCanvas.style.display = 'block';
 	_msCanvas.style.marginLeft = '3px';
 	_msDiv.appendChild( _msCanvas );
+  
+  try { 
+  	_msContext = _msCanvas.getContext( '2d' );
+  	_msContext.fillStyle = 'rgb(' + _colors.ms.bg.r + ',' + _colors.ms.bg.g + ',' + _colors.ms.bg.b + ')';
+  	_msContext.fillRect( 0, 0, _msCanvas.width, _msCanvas.height );
 
-	_msContext = _msCanvas.getContext( '2d' );
-	_msContext.fillStyle = 'rgb(' + _colors.ms.bg.r + ',' + _colors.ms.bg.g + ',' + _colors.ms.bg.b + ')';
-	_msContext.fillRect( 0, 0, _msCanvas.width, _msCanvas.height );
-
-	_msImageData = _msContext.getImageData( 0, 0, _msCanvas.width, _msCanvas.height );
-
+  	_msImageData = _msContext.getImageData( 0, 0, _msCanvas.width, _msCanvas.height );
+  } catch ( error ) { };
 	// mem
 
 	try { 
@@ -132,12 +135,14 @@ var Stats = function () {
 	_memCanvas.style.display = 'block';
 	_memCanvas.style.marginLeft = '3px';
 	_memDiv.appendChild( _memCanvas );
+  
+  try{
+  	_memContext = _memCanvas.getContext( '2d' );
+  	_memContext.fillStyle = '#301010';
+  	_memContext.fillRect( 0, 0, _memCanvas.width, _memCanvas.height );
 
-	_memContext = _memCanvas.getContext( '2d' );
-	_memContext.fillStyle = '#301010';
-	_memContext.fillRect( 0, 0, _memCanvas.width, _memCanvas.height );
-
-	_memImageData = _memContext.getImageData( 0, 0, _memCanvas.width, _memCanvas.height );
+  	_memImageData = _memContext.getImageData( 0, 0, _memCanvas.width, _memCanvas.height );
+  } catch ( error ) { };
 
 	function updateGraph( data, value, color ) {
 
@@ -224,11 +229,13 @@ var Stats = function () {
 			_ms = _time - _timeLastFrame;
 			_msMin = Math.min( _msMin, _ms );
 			_msMax = Math.max( _msMax, _ms );
-
-			updateGraph( _msImageData.data, Math.min( 30, 30 - ( _ms / 200 ) * 30 ), 'ms' );
+      
+			if(_msImageData) updateGraph( _msImageData.data, Math.min( 30, 30 - ( _ms / 200 ) * 30 ), 'ms' );
 
 			_msText.innerHTML = '<strong>' + _ms + ' MS</strong> (' + _msMin + '-' + _msMax + ')';
-			_msContext.putImageData( _msImageData, 0, 0 );
+			try {
+			  _msContext.putImageData( _msImageData, 0, 0 );
+      } catch ( error ) { };
 
 			_timeLastFrame = _time;
 
@@ -238,21 +245,25 @@ var Stats = function () {
 				_fpsMin = Math.min( _fpsMin, _fps );
 				_fpsMax = Math.max( _fpsMax, _fps );
 
-				updateGraph( _fpsImageData.data, Math.min( 30, 30 - ( _fps / 100 ) * 30 ), 'fps' );
+				if(_fpsImageData) updateGraph( _fpsImageData.data, Math.min( 30, 30 - ( _fps / 100 ) * 30 ), 'fps' );
 
 				_fpsText.innerHTML = '<strong>' + _fps + ' FPS</strong> (' + _fpsMin + '-' + _fpsMax + ')';
-				_fpsContext.putImageData( _fpsImageData, 0, 0 );
-
+				try {
+				  _fpsContext.putImageData( _fpsImageData, 0, 0 );
+        } catch ( error ) { };
+        
 				if ( _modesCount == 3 ) {
 
 					_mem = webkitPerformance.memory.usedJSHeapSize * 0.000000954;
 					_memMin = Math.min( _memMin, _mem );
 					_memMax = Math.max( _memMax, _mem );
 
-					updateGraph( _memImageData.data, Math.min( 30, 30 - ( _mem / 2 ) ), 'mem' );
+					if(_memImageData) updateGraph( _memImageData.data, Math.min( 30, 30 - ( _mem / 2 ) ), 'mem' );
 
 					_memText.innerHTML = '<strong>' + Math.round( _mem ) + ' MEM</strong> (' + Math.round( _memMin ) + '-' + Math.round( _memMax ) + ')';
-					_memContext.putImageData( _memImageData, 0, 0 );
+					try{
+					  _memContext.putImageData( _memImageData, 0, 0 );
+          } catch ( error ) { };
 
 				}
 
