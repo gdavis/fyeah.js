@@ -48,7 +48,7 @@ var Stats = function () {
 	_container.style.width = '80px';
 	_container.style.cursor = 'pointer';
   // _container.addEventListener( 'click', swapMode, false );
-  if( _container.attachEvent ) _container.attachEvent( 'click', swapMode, false ); else document.addEventListener( 'click', swapMode, false );
+  if( _container.attachEvent ) _container.attachEvent( 'click', swapMode, false ); else _container.addEventListener( 'click', swapMode, false );
   
 	// fps
 
