@@ -21,7 +21,7 @@ function MouseAndTouchTracker ( element, delegate, isMouseUpTracking ) {
   // add touch event listeners with scope for removal
   var self = this;
   this.startFunction = function(e){ self.onStart(e); };
-  this.moveFunction = function(e){ self.onMove(e); };
+  this.moveFunction = function(e){ self.onMove(e); if( navigator.userAgent.match(/MSIE/i) ) return false; };  // helps protect against disabled children in IE
   this.endFunction = function(e){ self.onEnd(e); };
   this.endDocumentFunction = function(e){ if( self.is_touching ) self.onEnd(e); };
   
@@ -56,7 +56,7 @@ MouseAndTouchTracker.prototype.recurseDisableElements = function ( elem ) {
   if( elem ) {
     // disable clicking/dragging
     try {
-      elem.onmousedown = function(e){return false;};  // TODO: remove this is touch events, so we can click inside??
+      elem.onmousedown = function(e){return false;};  // TODO: remove this if touch events, so we can click inside??
       elem.onselectstart = function(){return false;}
     } catch(err) {}
 
@@ -78,18 +78,18 @@ MouseAndTouchTracker.prototype.disposeTouchListeners = function () {
 };
 
 MouseAndTouchTracker.prototype.disposeMouseListeners = function () {
-  if( this.container.attachEvent ) this.container.detachEvent( "onmousedown", this.startFunction ); else this.container.removeEventListener( "mousedown", this.startFunction );
-  if( this.container.attachEvent ) this.container.detachEvent( "onmouseup", this.endFunction ); else this.container.removeEventListener( "mouseup", this.endFunction );
-  if( document.attachEvent ) document.detachEvent( "onmouseup", this.endDocumentFunction ); else document.removeEventListener( "mouseup", this.endDocumentFunction );
-  if( document.attachEvent ) document.detachEvent( "onmousemove", this.moveFunction ); else document.removeEventListener( "mousemove", this.moveFunction );
+  if( this.container.attachEvent ) this.container.detachEvent( "onmousedown", this.startFunction ); else this.container.removeEventListener( "mousedown", this.startFunction, false );
+  if( this.container.attachEvent ) this.container.detachEvent( "onmouseup", this.endFunction ); else this.container.removeEventListener( "mouseup", this.endFunction, false );
+  if( document.attachEvent ) document.detachEvent( "onmouseup", this.endDocumentFunction ); else document.removeEventListener( "mouseup", this.endDocumentFunction, false );
+  if( document.attachEvent ) document.detachEvent( "onmousemove", this.moveFunction ); else document.removeEventListener( "mousemove", this.moveFunction, false );
 };
 
 MouseAndTouchTracker.prototype.onStart = function ( touchEvent ) {
   // HACK for Android - otherwise touchmove events don't fire. See: http://code.google.com/p/android/issues/detail?id=5491
   if( navigator.userAgent.match(/Android/i) ) {
-    touchEvent.preventDefault();
+    if( touchEvent.preventDefault ) touchEvent.preventDefault();
   }
-  
+    
   // get page position of container for relative mouse/touch position
   this.findPos(this.container);
 
@@ -189,11 +189,16 @@ MouseAndTouchTracker.prototype.dispose = function () {
   } else {
     this.disposeMouseListeners();
   }
+  // clear functions stored for event listener removal
+  this.startFunction = null;
+  this.moveFunction = null;
+  this.endFunction = null;
+  this.endDocumentFunction = null;
   // clear objects
   this.delegate = false;
   this.touchstart = false;
   this.touchmovedlast = false;
-  this.touchmoved = false;
+  this.touchmoved = false;  
 };
 
 MouseAndTouchTracker.prototype.findPos = function(obj) {

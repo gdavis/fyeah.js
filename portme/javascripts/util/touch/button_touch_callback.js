@@ -1,8 +1,9 @@
-function ButtonTouchCallback( element, callback, highlights ) {
+function ButtonTouchCallback( element, callback, highlights, highlightOpacity ) {
   // store/set parameters/state
   this.element = element;
   this.callback = callback;
   this.highlights_on_touch = highlights || true;
+  this.highlight_opacity = highlightOpacity || 0.85;
   this.started_touching = false;
   this.CANCEL_THRESHOLD = 3;
   // create touch tracker
@@ -13,12 +14,13 @@ ButtonTouchCallback.prototype.touchUpdated = function ( touchState, touchEvent )
   // handle touch feedback with opacity
   if( touchState == MouseAndTouchTracker.state_start ) {
     if( this.highlights_on_touch ) {
-      this.element.style.opacity = 0.85;
+      this.element.style.opacity = this.highlight_opacity;
     }
     this.started_touching = true;
   }
+  // cancel click if mouse/touch moves past threshold
   if( touchState == MouseAndTouchTracker.state_move ) {
-    if( Math.abs( this.touch_tracker.touchmoved.x ) + Math.abs( this.touch_tracker.touchmoved.y ) >= 2 ) {
+    if( Math.abs( this.touch_tracker.touchmoved.x ) + Math.abs( this.touch_tracker.touchmoved.y ) >= this.CANCEL_THRESHOLD ) {
       if( this.highlights_on_touch ) {
         this.element.style.opacity = 1;
       }
@@ -28,8 +30,8 @@ ButtonTouchCallback.prototype.touchUpdated = function ( touchState, touchEvent )
     if( this.highlights_on_touch ) {
       this.element.style.opacity = 1;
     }
-    // call callback method if touch didn't move
-    if( Math.abs( this.touch_tracker.touchmoved.x ) + Math.abs( this.touch_tracker.touchmoved.y ) < 3 && this.started_touching ) {
+    // call callback method if touch didn't move past threshold
+    if( Math.abs( this.touch_tracker.touchmoved.x ) + Math.abs( this.touch_tracker.touchmoved.y ) < this.CANCEL_THRESHOLD && this.started_touching ) {
       this.callback( this.element, touchEvent );
     }
     this.started_touching = false;

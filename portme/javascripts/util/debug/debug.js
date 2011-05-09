@@ -27,11 +27,11 @@ Debug.prototype.init = function () {
   debugDiv.id = "debug";
   debugDiv.style.display = 'block';
   debugDiv.style.zIndex = '9999';
-  debugDiv.style.position = 'fixed';
-  debugDiv.style.bottom = '0px';
+  debugDiv.style.position = 'absolute';
+  debugDiv.style.top = '0px';
   debugDiv.style.right = '0px';
   debugDiv.style.width = '300px';
-  debugDiv.style.height = '200px';
+  debugDiv.style.height = '270px';
   debugDiv.style.border = '1px dotted red';
   debugDiv.style.padding = '8px';
   debugDiv.style.backgroundColor = '#eeeeee';
@@ -63,10 +63,19 @@ Debug.prototype.init = function () {
 	
 	// add mr. doob's stats
 	this.stats = new Stats();
-  this.stats_holder.appendChild(this.stats.domElement);    
+  this.stats_holder.appendChild(this.stats.domElement); 
+  
+  // check cookie for collapsed persistence
+  if( typeof Cookie !== 'undefined' ) {
+    if( Cookie.readCookie('debugShowing') == 'false' )  {
+      this.collapse();
+    }
+  }
 	
 	// start updating
-	if (this.element) this.runTimer();
+	if (this.element) { 
+	  this.runTimer();
+  }
 };
 
 Debug.prototype.collapse = function () {
@@ -76,11 +85,13 @@ Debug.prototype.collapse = function () {
     this.debugDiv.style.width = '50px';
     this.debugDiv.style.height = '20px';
     this.collapse_btn.innerHTML = 'expand';
+    if( typeof Cookie !== 'undefined' ) Cookie.createCookie('debugShowing','false',10);
   } else {
     this.content.style.display = 'block';
     this.debugDiv.style.width = '300px';
-    this.debugDiv.style.height = '200px';
+    this.debugDiv.style.height = '270px';
     this.collapse_btn.innerHTML = 'collapse';
+    if( typeof Cookie !== 'undefined' ) Cookie.createCookie('debugShowing','true',10);
   }
   
 };

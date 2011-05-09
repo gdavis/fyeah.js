@@ -13,8 +13,12 @@
     <script type="text/javascript" charset="utf-8" src="javascripts/util/debug/stats.js"></script>
     <script type="text/javascript" charset="utf-8" src="javascripts/util/debug/debug.js"></script>
     
+    <script type="text/javascript" charset="utf-8" src="javascripts/view/image_animation.js"></script>
+    
     <script type="text/javascript" charset="utf-8" src="javascripts/view/loading_indicator.js"></script>
     
+    <script type="text/javascript" charset="utf-8" src="javascripts/util/touch/cursor.js"></script>
+    <script type="text/javascript" charset="utf-8" src="javascripts/util/touch/page_indicators.js"></script>
     <script type="text/javascript" charset="utf-8" src="javascripts/util/touch/touch_tracker.js"></script>
     <script type="text/javascript" charset="utf-8" src="javascripts/util/touch/scroll_view.js"></script>
     <script type="text/javascript" charset="utf-8" src="javascripts/util/touch/scroll_view_paged.js"></script>
@@ -27,7 +31,6 @@
       function Demo() {
         // create debug
         window.debug = new Debug();
-        window.debug.init();
         //window.debug.dispose(); 
         
         // create platform helper
@@ -36,10 +39,28 @@
         // default mobile properties
         //IDevice.preventMobileSafariBounce();
         
+        
+        buildLoader();
+        buildTouchTracker();
+        buildTouchTrackerNoPress();
+        buildVerticalContentScroller();
+        buildHorizontalPagedScroller();
+        buildVerticalPagedScroller();
+        buildImageAnimation();
+        
+      }
+      
+      function initDemo(){
+        window.demo = new Demo();
+      }
+      
+      function buildLoader(){
         // create loading indicator
         var loader = new LoadingIndicator( document.getElementById('loader') );
         loader.pause();
-        
+      }
+      
+      function buildTouchTracker(){
         // create touch tracker
         var touchTracker = new MouseAndTouchTracker( document.getElementById('touch_tracker'), {
           touchUpdated : function( state, touchEvent ) {
@@ -58,8 +79,9 @@
             document.getElementById('touch_tracker').innerHTML = outputStr;
           }
         }, false );
-        
-        
+      }
+      
+      function buildTouchTrackerNoPress(){
         // create touch tracker
         // TODO: MAKE THIS BEHAVE PROPERLY ON ANDROID
         var touchTrackerBall = document.getElementById('touch_tracker_no_press_ball');
@@ -108,18 +130,34 @@
         var ballTimer = setInterval(function(){
           touchTrackerNoPressDelegate.animate();
         }, 50);
-        
-        // create vertical content scroller
+      }
+      
+      function buildVerticalContentScroller(){
+        // create vertical content scroller with scroll indicator
         var vertical_content = new VerticalContentScroller( document.getElementById('vert_scroller'), document.getElementById('vert_scroller_inner') );
-        
-        // create vertical content scroller with indicator
+      }
+      
+      function buildHorizontalPagedScroller(){
         var horizontalPages = document.getElementById('horiz_paged_scroller_inner').childNodes.length;
-        var indicator = new PageIndicator( document.getElementById('horiz_paged_scroller'), 15, horizontalPages, 'ff0000', '555555' );
+        var indicator = new SimplePageIndicator( document.getElementById('horiz_paged_scroller'), horizontalPages, 15, 'ff0000', '555555' );
         var horizontal_paged = new ScrollViewPagedHorizontal( document.getElementById('horiz_paged_scroller'), document.getElementById('horiz_paged_scroller_inner'), indicator );
       }
       
-      function initDemo(){
-        window.demo = new Demo();
+      function buildVerticalPagedScroller(){
+        var inner_container = document.getElementById('vert_paged_scroller_inner');
+        var pages = inner_container.getElementsByTagName('img').length;
+        var indicator = new SimplePageIndicator( document.getElementById('vert_paged_scroller'), pages, 15, 'ff0000', '555555' );
+        var vertical_paged = new ScrollViewPagedHorizontal( document.getElementById('vert_paged_scroller'), document.getElementById('vert_paged_scroller_inner'), indicator );
+        vertical_paged.disableVScrollIndicator();
+        vertical_paged.setOrientation( vertical_paged.VERTICAL );
+      }
+      
+      function buildImageAnimation(){
+        // create image animation
+        var img_holder = document.getElementById('image_holder');
+        var img_sprite = document.getElementById('image_sprite');
+        var animation = new ImageAnimation( 50, 50, img_holder, img_sprite, 8 );
+        animation.start();
       }
     </script>
   </head>
@@ -155,6 +193,25 @@
       <h1>Horizontal Paged Scroller</h1>
       <div id="horiz_paged_scroller" style="position:relative;width:400px;height:150px;overflow:hidden;">
         <div id="horiz_paged_scroller_inner" style="position:absolute;width:2400px;height:420px;left:0px;top:0px"><img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/><img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/><img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/><img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/><img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/><img style="float:left" src="media/images/lego-steve-jobs-2.jpg" width="400" height="420"/></div>
+      </div>
+    </div>
+    
+    <div class="example">
+      <h1>Vertical Paged Scroller</h1>
+      <div id="vert_paged_scroller" style="position:relative;width:400px;height:270px;overflow:hidden;">
+        <div id="vert_paged_scroller_inner" style="position:absolute;width:400px;height:1080px;left:0px;top:0px">
+          <img style="float:left;height:270px" src="media/images/lego-steve-jobs-2.jpg" width="400" height="400"/>
+          <img style="float:left;height:270px" src="media/images/lego-steve-jobs-2.jpg" width="400" height="400"/>
+          <img style="float:left;height:270px" src="media/images/lego-steve-jobs-2.jpg" width="400" height="400"/>
+          <img style="float:left;height:270px" src="media/images/lego-steve-jobs-2.jpg" width="400" height="400"/>
+        </div>
+      </div>
+    </div>
+    
+    <div class="example">
+      <h1>PNG animation</h1>
+      <div id='image_holder' style="position:relative;width:50px;height:50px;overflow:hidden">
+        <img id='image_sprite' src='media/images/loader-sprite.png' style="position:absolute" />
       </div>
     </div>
     

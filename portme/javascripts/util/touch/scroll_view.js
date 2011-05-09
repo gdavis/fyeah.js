@@ -48,10 +48,7 @@ var ScrollView = Class.create(ScrollViewTouchTracker, {
 	scroll_enabled_y : true,
 	scroll_content : false,
 	base_inline_css : false,
-	CSS_HAND : 'cursor:hand; cursor:grab; cursor:-moz-grab; cursor:-webkit-grab;',
-	CSS_HAND_CUR : 'cursor: url(media/cursors/openhand.cur), default !important;',
-	CSS_HAND_GRAB : 'cursor:grabbing; cursor:-moz-grabbing; cursor:-webkit-grabbing;',
-	CSS_HAND_GRAB_CUR : 'cursor: url(media/cursors/closedhand.cur), default !important;',
+	cursor : false,
 	
 	initialize : function( $super, touchObject, scrollElementInner ) {
 		$super( touchObject );
@@ -61,9 +58,9 @@ var ScrollView = Class.create(ScrollViewTouchTracker, {
 		this.content_size = { width:0, height:0 };
 		this.scroll_content = scrollElementInner;
 		
-		this.base_inline_css = this.touch_tracker.container.getAttribute("style") || '';
+		this.cursor = new Cursor();
     
-    this.platform_helper = new PlatformHelper();
+    this.platform_helper = ( typeof platform_helper !== 'undefined' ) ? platform_helper : new PlatformHelper(); // check to see if it already exists in global space....
     this.platform_helper.convertPosToWebkitTransform( this.scroll_content );
 		this.platform_helper.update2DPosition( this.scroll_content, 0, 0 );                     
 		
@@ -86,7 +83,7 @@ var ScrollView = Class.create(ScrollViewTouchTracker, {
 	},
 	onStart : function($super, touchEvent) {
 		$super( touchEvent );
-    this.cursorSetGrabbyHand();
+    this.cursor.cursorSetGrabbyHand();
 	},
 	onMove : function($super, touchEvent) {
 		$super( touchEvent );
@@ -94,36 +91,21 @@ var ScrollView = Class.create(ScrollViewTouchTracker, {
 	},
 	onEnd : function($super, touchEvent) {
 		$super( touchEvent );
-		if(this.touch_tracker.touch_is_inside) this.cursorSetHand();
-		else this.cursorSetDefault();
+		if(this.touch_tracker.touch_is_inside) this.cursor.cursorSetHand();
+		else this.cursor.cursorSetDefault();
 	},
 	onEnter : function($super, touchEvent) {
 		$super( touchEvent );
-		if(!this.touch_tracker.is_touching) this.cursorSetHand();
+		if(!this.touch_tracker.is_touching) this.cursor.cursorSetHand();
 	},
 	onLeave : function($super, touchEvent) {
 		$super( touchEvent );
-		if(this.touch_tracker.is_touching) this.cursorSetGrabbyHand();
-		else this.cursorSetDefault();
-	},
-	cursorSetDefault : function() {
-	  this.touch_tracker.container.setAttribute('style', this.base_inline_css);
-	},
-	cursorSetHand : function() {
-    if( this.platform_helper.is_chrome || this.platform_helper.is_msie ) {
-      this.touch_tracker.container.setAttribute('style', this.base_inline_css + this.CSS_HAND + this.CSS_HAND_CUR);
-    } else {
-      this.touch_tracker.container.setAttribute('style', this.base_inline_css + this.CSS_HAND);
-    }
-	},
-	cursorSetGrabbyHand : function() {
-    if( this.platform_helper.is_chrome || this.platform_helper.is_msie ) {
-      this.touch_tracker.container.setAttribute('style', this.base_inline_css + this.CSS_HAND_GRAB + this.CSS_HAND_GRAB_CUR);
-    } else {
-      this.touch_tracker.container.setAttribute('style', this.base_inline_css + this.CSS_HAND_GRAB);
-    }
+		if(this.touch_tracker.is_touching) this.cursor.cursorSetGrabbyHand();
+		else this.cursor.cursorSetDefault();
 	},
 	dispose : function($super) {
+	  this.cursor.dispose();
+	  this.cursor = null;
 		this.timer_active = false;
 		this.cur_position = false;
 		this.container_size = false;
@@ -167,7 +149,7 @@ var ScrollViewLocksDirection = Class.create(ScrollView, {
     } else {
       $super( touchEvent );
     }
-    touchEvent.preventDefault();
+    if( typeof touchEvent.preventDefault !== 'undefined' ) touchEvent.preventDefault();
 	},
 	onEnd : function($super, touchEvent) {   
 		$super( touchEvent );
@@ -179,119 +161,3 @@ var ScrollViewLocksDirection = Class.create(ScrollView, {
     this.touch_lock_direction = direction;
 	}
 });
-
-
-var VerticalScrollIndicator = Class.create({
-	container : 0,
-	container_height : 0,
-	content_height : 0,
-	scroll_indicator : null,
-	scroll_indicator_bar : null,
-	scroll_indicator_x : 0,
-	scroll_indicator_height : 0,
-	scroll_indicator_opacity : 0.5,
-	is_showing : false,
-	fade : false,
-
-	initialize : function( container, containerWidth, containerHeight, contentHeight ) {
-		this.container = container;
-		this.container_width = containerWidth;
-		this.container_height = containerHeight;
-		this.content_height = contentHeight;
-		this.build();
-		this.resize( this.container_width, this.container_height, this.content_height );
-	},
-
-	build : function() {
-    // store reused position/dimensions
-    this.scroll_indicator_height = ( this.container_height / this.content_height ) * this.container_height;
-    this.scroll_indicator_x = this.container_width - 7;
-    this.bottom_limit = this.container_height - this.content_height;
-
-    // create div, set size and hide it
-    this.scroll_indicator = document.createElement('div');
-    this.scroll_indicator.className = 'scroll_indicator';
-    this.scroll_indicator.style.width = '5px';
-    this.scroll_indicator.style.height = this.container_height + 'px';
-    this.scroll_indicator.style.left = '0px';
-    this.scroll_indicator.style.top = '0px';
-    this.scroll_indicator.style.position = 'absolute';
-    this.scroll_indicator.style.overflow = 'hidden';
-    this.scroll_indicator.style.zIndex = '10';
-    this.scroll_indicator.style.MozBorderRadius = '6px';
-    this.scroll_indicator.style.WebkitBorderRadius = '6px';
-
-    this.scroll_indicator_bar = document.createElement('div');
-    this.scroll_indicator_bar.className = 'scroll_indicator_bar';
-    this.scroll_indicator_bar.style.width = '5px';
-    this.scroll_indicator_bar.style.height = this.scroll_indicator_height + 'px';
-    this.scroll_indicator_bar.style.left = '0px';
-    this.scroll_indicator_bar.style.top = '0px';
-    this.scroll_indicator_bar.style.display = 'none';
-    this.scroll_indicator_bar.style.position = 'absolute';
-    this.scroll_indicator_bar.style.backgroundColor = 'black';
-    this.scroll_indicator_bar.style.opacity = '0.5';
-    this.scroll_indicator_bar.style.MozBorderRadius = '6px';
-    this.scroll_indicator_bar.style.WebkitBorderRadius = '6px';
-
-    // attach to the scroll container div
-    this.scroll_indicator.appendChild( this.scroll_indicator_bar );
-    this.container.appendChild( this.scroll_indicator );
-	},
-  resize : function( containerWidth, containerHeight, contentHeight ) {
-	  this.container_width = containerWidth;
-		this.container_height = containerHeight;
-		this.content_height = contentHeight;
-		this.bottom_limit = this.container_height - this.content_height;
-
-    this.scroll_indicator_height = ( this.container_height / this.content_height ) * this.container_height;
-    if( this.scroll_indicator_height > this.container_height ) this.scroll_indicator_height = this.container_height;
-    if( this.scroll_indicator_bar ) this.scroll_indicator_bar.style.height = Math.round( this.scroll_indicator_height ) + 'px';
-  },
-  update : function( scrollYPosition ) {
-    if( this.scroll_indicator && this.scroll_indicator_bar ) {
-      platform_helper.update2DPosition( this.scroll_indicator, this.scroll_indicator_x, 0 );
-      var verticalDistanceRatio = MathUtil.getPercentWithinRange( 0, this.bottom_limit, scrollYPosition );
-      var yPosition = Math.round( verticalDistanceRatio * ( this.container_height - this.scroll_indicator_height ) );
-      platform_helper.update2DPosition( this.scroll_indicator_bar, 0, yPosition );
-
-      // force opacity
-      if( this.is_showing ) {
-        this.scroll_indicator_bar.style.display = 'block';
-        this.scroll_indicator_bar.style.opacity = this.scroll_indicator_opacity;
-      }
-    }
-
-  },
-	show : function() {
-    if( this.is_showing == false ) {
-      if( this.container_height < this.content_height ) {
-        this.scroll_indicator_bar.style.display = 'block';
-        this.is_showing = true;
-        
-        // tween opacity or just set it if no tweener
-        if( typeof JSTweener !== 'undefined' ) {
-          JSTweener.addTween( this.scroll_indicator_bar.style, { time: 0.3, transition: 'linear', opacity: this.scroll_indicator_opacity } );
-        } else {
-          this.scroll_indicator_bar.style.opacity = this.scroll_indicator_opacity;
-        }
-      }
-    }
-	},
-	hide : function() {
-    if( this.is_showing == true ) {
-      this.is_showing = false;
-
-      // tween opacity or just set it if no tweener
-      if( typeof JSTweener !== 'undefined' ) {
-        JSTweener.addTween( this.scroll_indicator_bar.style, { time: 0.3, transition: 'linear', opacity: 0 } );
-      } else {
-        this.scroll_indicator_bar.style.opacity = 0;
-      }
-    }
-	},
-  dispose : function() {
-    // if( this.holder ) this.holder.remove();
-  }
-});
-
