@@ -1,11 +1,11 @@
-var ImageAnimation = function( width, height, imageHolder, image, numFrames ) {
+var ImageAnimation = function( width, height, imageHolder, image, numFrames, frameRate ) {
   // private vars
   var _width = width;
   var _height = height;
   var _num_frames = numFrames;
   var _cur_frame = 0;
   var _timeout = null;
-  var _framerate = Math.round( 1000/30 );
+  var _framerate = frameRate || Math.round( 1000/30 );
   
   // grab container refs
   var _img_holder = imageHolder;
@@ -35,7 +35,7 @@ var ImageAnimation = function( width, height, imageHolder, image, numFrames ) {
   return {
     start: function() {
       stopTimer();
-      _timeout = setTimeout( function() { runTimer(); } , 1000/30 );
+      _timeout = setTimeout( function() { runTimer(); } , _framerate );
     },
     
     stop: function() {

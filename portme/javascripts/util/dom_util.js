@@ -88,10 +88,12 @@ DOMUtil.hasClass = function( el, name ) {
 DOMUtil.addClass = function( el, name ) {
   if( !DOMUtil.hasClass( el, name ) ) {
     el.className += ' ' + name;
+    el.className = el.className.replace(/ {2,}/g,' ');
   }
 };
 
 DOMUtil.removeClass = function( el, name ) {
+  el.className = el.className.replace( DOMUtil.getRE( ''+name ), '' );
   el.className = el.className.replace( DOMUtil.getRE( name ), '' );
 };
 
@@ -106,12 +108,26 @@ DOMUtil.toggleClass = function( el, name, on ) {
   }
 };
 
+DOMUtil.replaceElement = function( oldElem, newElem ) {
+  oldElem.parentNode.replaceChild( newElem, oldElem );
+};
+
+DOMUtil.killEvent = function(e) {
+  if( typeof e !== 'undefined' && e != null ) {
+    if( typeof e.preventDefault !== 'undefined' ) e.preventDefault();
+    if( typeof e.stop !== 'undefined' ) e.stop();
+
+    e.returnValue = false;
+    e.stopPropagation();
+  }
+};
+
 DOMUtil.recurseDisableElements = function ( elem ) {
   if( elem ) {
     // disable clicking/dragging
     try {
       elem.onmousedown = function(e){return false;};  // TODO: remove this if touch events, so we can click inside??
-      elem.onselectstart = function(){return false;}
+      elem.onselectstart = function(e){return false;};
     } catch(err) {}
 
     // loop through children and do the same

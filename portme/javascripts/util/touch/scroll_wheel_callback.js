@@ -14,6 +14,7 @@ var ScrollWheelCallback = function( container, callback ) {
     if(element == null)
       return;
     if(element.addEventListener) {
+      debug.log('eventName = '+eventName);
       if(eventName == 'mousewheel') element.addEventListener('DOMMouseScroll', callback, false);  
       element.addEventListener(eventName, callback, false);
     }
@@ -43,6 +44,7 @@ var ScrollWheelCallback = function( container, callback ) {
     e.cancelBubble = true;
     e.cancel = true;
     e.returnValue = false;
+    debug.log('cancel event');
     return false;
   };
 

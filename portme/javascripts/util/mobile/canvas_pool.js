@@ -1,172 +1,138 @@
-
-var CanvasPool = Class.create(Class, {
-    
-    canvases: false,
-    num_canvases: 0,
-    active_canvases : 0,
-
-    initialize: function ( numCanvases ) {
-        this.canvases = [];
-        this.num_canvases = numCanvases;
-
-        for (var i = 0, len = this.num_canvases; i < len; i += 1) {
-            var new_canvas = document.createElement("canvas");
-            this.canvases.push({element: new_canvas, is_active: false});
-        }
-        debug.addRealtimeProperty( this, 'active_canvases', 'active canvases' )
-        
-    },
-
-    getFreeCanvas: function () {
-        for (var i = 0, len = this.num_canvases; i < len; i += 1) {
-            if (this.canvases[i].is_active === false) {
-                delete this.canvases[i].element;
-                delete this.canvases[i].is_active;
-                var new_canvas = document.createElement("canvas");
-                this.canvases[i] = {element: new_canvas, is_active: true};
-                return this.canvases[i].element;
-            }
-        }
-        return null;
-    },
-
-    deactivateCanvas: function (canvas_element) {
-        var context = canvas_element.getContext("2d");
-        context.clearRect(0, 0, 768, 1004 );//parseInt(canvas_element.width), parseInt(canvas_element.height));
-        canvas_element.width = 1;
-        canvas_element.height = 1;
-        context.clearRect(0, 0, 768, 1004 );//parseInt(canvas_element.width), parseInt(canvas_element.height));
-        canvas_element.className = '';
-        // remove the two attributes from the canvas object so that the canvas is fresh when it gets pulled out to be reused.
-        canvas_element.removeAttribute(CanvasPool.IMAGE_AREA);
-        canvas_element.removeAttribute(CanvasPool.IMAGE_SCROLLER);
-
-        this.active_canvases = 0;
-        for (var i = 0, len = this.num_canvases; i < len; i += 1) {
-            if (canvas_element === this.canvases[i].element) {
-                this.canvases[i].is_active = false;
-            }
-        }        
-    },
-    
-    updateNumActiveCanvii : function() {
-        this.active_canvases = 0;
-        for (var i = 0, len = this.num_canvases; i < len; i += 1) {
-            if (this.canvases[i].is_active === true) {
-                this.active_canvases += 1;
-            }
-        }
-    },
+var CanvasPool = function( numCanvases ){
+  var _canvases = null;
+  var _num_canvases = 0;
+  var _active_canvases = 0;
   
-    replaceImageWithCanvas: function ( imgElement, dataAttribute, callback, index ) {
-        // get props from img
-        var src = imgElement.readAttribute( dataAttribute );
-        
-        // create canvas, size it and replace the image element it got its data from
-        var canvas = this.getFreeCanvas();
-        if( !canvas ) debug.log('ERROR: OUT OF CANVII');
-        canvas.width = imgElement.readAttribute('width');
-        canvas.height = imgElement.readAttribute('height');
-        canvas.className = imgElement.className+"";
-        canvas.id = index;
-        var attrObj = {};
-        attrObj[dataAttribute] = src;
-        canvas.writeAttribute( attrObj );
-        imgElement.replace(canvas);
+  var DATA_PATH_ATTR = 'data-img-src';
+  
+  var init = function(){
+    _canvases = [];
+    _num_canvases = numCanvases;
+    
+    // create pool
+    for ( var i = 0, len = _num_canvases; i < len; i += 1 ) {
+      var newCanvas = document.createElement( 'canvas' );
+      _canvases.push({ element: newCanvas, is_active: false });
+    }
+  };
+  
+  var getFreeCanvas = function () {
+    for (var i = 0, len = _num_canvases; i < len; i += 1) {
+      if ( _canvases[i].is_active === false ) {
+        _canvases[i].is_active = true;
+        updateNumActiveCanvii();
+        return _canvases[i].element;
+      }
+    }
+    updateNumActiveCanvii();
+    return null;
+  };
+  
+  var deactivateCanvas = function ( canvas_element ) {
+    var context = canvas_element.getContext("2d");
+    var w = parseInt(canvas_element.width);
+    var h = parseInt(canvas_element.height);
+    context.clearRect(0, 0, w, h);
+    canvas_element.width = 1;
+    canvas_element.height = 1;
+    canvas_element.className = '';
 
+    // _active_canvases = 0;
+    for (var i = 0, len = _num_canvases; i < len; i += 1) {
+      if (canvas_element === _canvases[i].element) {
+        _canvases[i].is_active = false;
+      }
+    }
+    
+    updateNumActiveCanvii();
+  };
+  
+  var updateNumActiveCanvii = function() {
+    _active_canvases = 0;
+    for ( var i = 0, len = _num_canvases; i < len; i += 1 ) {
+      if ( _canvases[i].is_active === true ) {
+        _active_canvases += 1;
+      }
+    }
+  };
+  
+  var replaceImageWithCanvas = function ( imgElement, callback, async ) {
+    // get props from img
+    var src = imgElement.getAttribute( DATA_PATH_ATTR );
+    // var w = imgElement.getAttribute('width');
+    // var h = imgElement.getAttribute('height');
+    // var className = imgElement.className+"";
+    
+    // create canvas, size it and replace the image element it got its data from
+    var canvas = getFreeCanvas();
+    // if( !canvas ) debug.log('ERROR: OUT OF CANVII');
+    // canvas.width = w;
+    // canvas.height = h;
+    // canvas.className = className;
+    canvas.setAttribute( DATA_PATH_ATTR , src );
+    
+    // swap img for canvas
+    DOMUtil.replaceElement( imgElement, canvas );
+    
+    var loadImageObj = {
+      load : function(){
         // get canvas context and create image loader
         var context = canvas.getContext("2d");
-        // context.clearRect(0, 0, canvas.width, canvas.height);
         var image = new Image();
+
+        var cleanup = function(){
+          delete image.src;
+          image.onload = null;
+          image.onerror = null;
+          image = null;
+          if( callback ) callback();
+        };
 
         // load image, with callback
         image.onload = function () {
-//            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(image, 0, 0);
-            delete image.src;
-            image.onload = null;
-            image = null;
-            if( callback ) callback();
+          canvas.width = image.width;
+          canvas.height = image.height;
+          context.drawImage(image, 0, 0);
+          cleanup();
+          canvas.className += ' loaded';
         };
         image.onerror = function () {
-//            context.clearRect(0, 0, canvas.width, canvas.height);
-            delete image.src;
-            image.onerror = null;
-            image = null;
-            if( callback ) callback();
+          cleanup();
+          canvas.className += ' loaded error';
         };
+        // kick off the image load
         image.src = src;
-    },
+      },
+      canvas : canvas
+    };
     
-    replaceCanvasWithImage : function( canvas, dataAttribute ) {
-        var imgElement = document.createElement( 'img' );
-        imgElement.width = canvas.width;
-        imgElement.height = canvas.height;
-        imgElement.className = canvas.className+"";
-        var attrObj = {};
-        attrObj[dataAttribute] = canvas.readAttribute( dataAttribute );
-        imgElement.writeAttribute( attrObj );
-        this.deactivateCanvas( canvas );
-        canvas.replace( imgElement );
-    },
-    
-    replaceImagesInContainer : function( container, dataAttribute, callback ) {
-        // make sure we only use elements with the data attribute that we're looking for
-        var imgSelector = container.select('img');
-        var images = [];
-        var i;
-        for( i = 0; i < imgSelector.length; i++ ){
-            if( imgSelector[i].readAttribute( dataAttribute ) ) {
-                images.push( imgSelector[i] );
-            }
-        }
-
-        // if none found, make callback immediately
-        if( images.length == 0 ) {
-            if( callback ) callback();
-            return;
-        }
-
-        // replace correct elements
-        var imagesLoaded = 0;
-        for( i=0; i < images.length; i++ ) {
-            this.replaceImageWithCanvas( images[i], dataAttribute, function(){
-                imagesLoaded++;
-                if( imagesLoaded == images.length ) {
-                    if( callback ) 
-                        callback();
-                }
-            }, i);
-
-        }
-        
-        // update count for debugging
-        this.updateNumActiveCanvii();
-    },
-    
-    replaceCanvasesInContainer : function( container, dataAttribute ) {
-        // make sure we only use elements with the data attribute that we're looking for
-        var canviiSelector = container.select('canvas');
-        var canvii = [];
-        var i;
-        for( i = 0; i < canviiSelector.length; i++ ){
-            if( canviiSelector[i].readAttribute( dataAttribute ) ) {
-                canvii.push( canviiSelector[i] );
-            }
-        }
-        
-        // replace correct elements
-        for( i=0; i < canvii.length; i++ ) {
-            this.replaceCanvasWithImage( canvii[i], dataAttribute );
-        }
-        
-        // update count for debugging
-        this.updateNumActiveCanvii();
+    if( async == true ) 
+      return loadImageObj;
+    else {
+      loadImageObj.load();
     }
-    
-});
+  };
+  
+  var replaceCanvasWithImage = function( canvas, w, h ) {
+    var imgElement = document.createElement( 'img' );
+    imgElement.width = w || canvas.width;   // HACK: had to do this since the image w&h is lost when we stop the initial queued loading
+    imgElement.height = h || canvas.height;
+    imgElement.setAttribute( DATA_PATH_ATTR, canvas.getAttribute( DATA_PATH_ATTR ) );
+    // imgElement.className = canvas.className+"";
 
-Object.extend(CanvasPool, {
-    IMAGE_AREA : 'data-img-src',
-    IMAGE_SCROLLER : 'data-img-scroller'
-});
+    deactivateCanvas( canvas );
+    
+    DOMUtil.replaceElement( canvas, imgElement );
+  };
+  
+  
+  init();
+  
+  return {
+    DATA_PATH_ATTR : DATA_PATH_ATTR,
+    getFreeCanvas : getFreeCanvas,
+    deactivateCanvas : deactivateCanvas,
+    replaceImageWithCanvas : replaceImageWithCanvas,
+    replaceCanvasWithImage : replaceCanvasWithImage
+  };
+};

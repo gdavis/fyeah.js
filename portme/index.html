@@ -24,6 +24,8 @@
     <script type="text/javascript" charset="utf-8" src="javascripts/util/touch/scroll_view_paged.js"></script>
     <script type="text/javascript" charset="utf-8" src="javascripts/util/touch/vertical_content_scroll.js"></script>
     
+    <script type="text/javascript" charset="utf-8" src="javascripts/util/touch/scroll_wheel_callback.js"></script>
+    
     <link rel="stylesheet" href="stylesheets/interface.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <link rel="stylesheet" href="stylesheets/loading_indicator.css" type="text/css" media="screen" title="no title" charset="utf-8">
     
@@ -47,7 +49,7 @@
         buildHorizontalPagedScroller();
         buildVerticalPagedScroller();
         buildImageAnimation();
-        
+        buildScrollWheelDemo();
       }
       
       function initDemo(){
@@ -148,7 +150,7 @@
         var pages = inner_container.getElementsByTagName('img').length;
         var indicator = new SimplePageIndicator( document.getElementById('vert_paged_scroller'), pages, 15, 'ff0000', '555555' );
         var vertical_paged = new ScrollViewPagedHorizontal( document.getElementById('vert_paged_scroller'), document.getElementById('vert_paged_scroller_inner'), indicator );
-        vertical_paged.disableVScrollIndicator();
+        // vertical_paged.disableVScrollIndicator();
         vertical_paged.setOrientation( vertical_paged.VERTICAL );
       }
       
@@ -158,6 +160,23 @@
         var img_sprite = document.getElementById('image_sprite');
         var animation = new ImageAnimation( 50, 50, img_holder, img_sprite, 8 );
         animation.start();
+        
+        // create another image animation
+        var img_holder2 = document.getElementById('image_holder2');
+        var img_sprite2 = document.getElementById('image_sprite2');
+        var animation2 = new ImageAnimation( 78, 78, img_holder2, img_sprite2, 6, 1000/10 );
+        animation2.start();
+        
+      }
+      
+      function buildScrollWheelDemo(){
+        var scrollDistance = 0;
+        var container = document.getElementById('scrollwheel_container');
+        
+        var scrollWheel = new ScrollWheelCallback( container, function( delta ){
+          scrollDistance += delta;
+          container.innerHTML = scrollDistance;
+        });
       }
     </script>
   </head>
@@ -209,10 +228,18 @@
     </div>
     
     <div class="example">
-      <h1>PNG animation</h1>
+      <h1>PNG animations</h1>
       <div id='image_holder' style="position:relative;width:50px;height:50px;overflow:hidden">
         <img id='image_sprite' src='media/images/loader-sprite.png' style="position:absolute" />
       </div>
+      <div id='image_holder2' style="position:relative;width:78px;height:78px;overflow:hidden">
+        <img id='image_sprite2' src='media/images/ghosty.png' style="position:absolute" />
+      </div>
+    </div>
+    
+    <div class="example">
+      <h1>ScrollWheel callback</h1>
+      <div id='scrollwheel_container' style="width:50px;height:50px;border:1px solid green;"></div>
     </div>
     
   </body>
